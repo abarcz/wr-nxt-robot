@@ -1,0 +1,59 @@
+task main ()
+{
+	const int pwr = 50;		// moc silnikow
+	unsigned int light_val;		// wartosc z czujnika swiatla
+	bool touch_val;			// wartosc z czujnika dotyku
+	bool go = false;		// wlacza jazde
+	unsigned int move_type;		// rodzaj ruchu - losowany
+	unsigned int pwr_boost, pwr1;
+	SetSensorType(IN_3, SENSOR_TYPE_LIGHT_ACTIVE);
+	SetSensorMode(IN_3, SENSOR_MODE_PERCENT);
+	SetSensor(IN_1, SENSOR_TOUCH);
+	while (1)
+	{
+		touch_val = Sensor(IN_1);	// jesli wcisnieto WL/WYL jazde
+		if (touch_val)
+		{ 
+			go = !go;
+			Wait(500);
+		}
+		light_val = Sensor(IN_3);
+		NumOut(0,0,light_val);
+		TextOut(0,32,"I am");
+		TextOut(0,24,"a war machine!");
+		if (go)
+		{
+			// sterowanie silnikiem
+			move_type = Random(7);
+			pwr_boost = Random(25);
+			pwr1 = pwr + pwr_boost;
+			// do przodu
+			if (move_type < 1)
+			{
+				OnFwd(OUT_AC, pwr1);
+			} 
+			// do tylu
+			else if (move_type < 2)
+			{
+				OnRev(OUT_AC, pwr1);
+			}
+			// skret 1
+			else if (move_type < 5)
+			{
+				OnFwd(OUT_A, pwr1);
+				OnRev(OUT_C, pwr1);
+			}
+			// skret 2
+			else if (move_type < 8)
+			{
+				OnRev(OUT_A, pwr1);
+				OnFwd(OUT_C, pwr1);
+			}
+			Wait(500);
+			Coast(OUT_AC);
+			Wait(500);
+		}
+
+	}
+}
+

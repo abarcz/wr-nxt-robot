@@ -1,0 +1,26 @@
+#define NEAR 150 //cm
+
+task main()
+{
+	unsigned int s2,s4;
+	unsigned int stp = 0;
+	SetSensorLowspeed(IN_4);
+	SetSensorLowspeed(IN_2);
+
+   	while(true)
+	{
+		s2 = SensorUS(IN_2);
+		s4 = SensorUS(IN_4);
+		
+		NumOut(0,32,s2);
+		NumOut(0,24,s4);
+
+		if(!stp)
+		{
+   			OnRev(OUT_AC,50);
+   			while(SensorUS(IN_2)<NEAR);
+		}
+		Off(OUT_AC);
+		stp = 1;
+	}
+}
