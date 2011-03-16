@@ -1,0 +1,132 @@
+#define TURN_TIME 	500
+#define DELAY		500
+//---- Movement modes ----
+#define NO_CHANGE 	0
+#define STOP		1
+#define FORWARD		2
+#define BACKWARD	3
+#define SIDEWAYS	4
+#define TURN_LEFT	5
+#define TURN_RIGHT	6
+//------------------------ 
+
+task main()
+{	
+	unsigned int us_front;		// ultrasonic front
+	unsigned int us_side;		// ultrasonic side
+	unsigned int mv_mode;		// movement mode
+	unsigned int power;		// engines power
+	byte engine_flag;		// working engines
+
+	/*
+	 * Initialization
+	 */
+
+	SetSensorLowspeed(IN_2);
+	SetSensorLowspeed(IN_4);
+	mv_mode = 1;
+	power = 50;
+	engine_flag = OUT_AC;	
+
+	while(true)
+	{
+		/* 
+		 * Sensor phase 
+		 * Enviroment snapshot
+  		 */
+		us_front = SensorUS(IN_4);
+		us_side = SensorUS(IN_2);
+
+		/*
+		 * Decision phase
+		 * Algorithm
+   		 */
+		
+		if(us_side > NEAR) 
+		{
+			PlayTone(TONE_A3, 1000);
+			mv_mode = STOP;
+		}
+		else
+		{
+			if(us_front > NEAR)
+			{
+				mv_mode = FORWARD;
+			}
+			else
+			{
+				mv_mode = TURN_LEFT;
+			}
+		}
+		
+		
+		/*
+		 * Movement phase
+		 */
+		switch(mv_mode)
+		{
+			case NO_CHANGE :
+			{
+				break;
+			}
+			case STOP :
+			{
+				Off(engine_flag);
+				mv_mode = NO_CHANGE;
+				break;
+			}
+			case FORWARD :
+			{
+				Off(engine_flag);
+				engine_flag = OUT_AC;
+				OnRev(engine_flag, power);
+				mv_mode = NO_CHANGE;
+				break;
+			}
+			case BACKWARD :
+			{
+				Off(engine_flag);
+                                engine_flag = OUT_AC;
+                                OnFwd(engine_flag, power);
+				mv_mode = NO_CHANGE;
+				break;
+			}
+			case SIDEWAYS :
+			{
+				mv_mode = NO_CHANGE;
+				break;
+			}
+			case TURN_LEFT :
+			{
+				Off(engine_flag);
+				engine_flag = OUT_AC;
+				OnFwd(OUT_A, power);
+				OnRev(OUT_C, power);
+				mv_mode = NO_CHANGE;
+				Wait(TURN_TIME);
+				break;
+			}
+			case TURN_RIGHT :
+			{
+				Off(engine_flag);
+				engine_flag = OUT_AC;
+				OnRev(OUT_A, power);
+				OnFwd(OUT_C, power);
+				mv_mode = NO_CHANGE;
+				Wait(TURN_TIME);
+				break; 
+			}
+			default :
+			{
+				break;
+			}
+			
+		}
+		
+		/* 
+		 * Coffee time
+		 */
+		Wait(DELAY);
+	}
+
+}
