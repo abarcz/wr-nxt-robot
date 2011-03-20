@@ -1,0 +1,210 @@
+#include "avg_tab.h"
+
+#define TURN_TIME 	500
+#define DELAY		100
+#define OFF_WAIT	50
+//---- Movement modes ----
+#define NO_CHANGE 	0
+#define STOP		1
+#define FORWARD		2
+#define BACKWARD	3
+#define SIDEWAYS_L	4
+#define TURN_LEFT	5
+#define TURN_RIGHT	6
+//------------------------ 
+#define NEAR 		150
+#define TRESHOLD_F 	26
+#define TRESHOLD_S 	3
+
+task main()
+{	
+	unsigned int us_front;		// light front
+	unsigned int us_side;		// light side
+	unsigned int mv_mode;		// movement mode
+	unsigned int old_mv_mode;	// old movement mode
+	unsigned int power;		// engines power
+	byte engine_flag;		// working engines
+	AVG_EL avg_in2[AVG_NUM];
+	AVG_EL avg_in4[AVG_NUM];
+	unsigned int us_front1;
+	unsigned int us_side1;
+	unsigned int s_touch;		// front touch sensor
+
+	/*
+	 * Initialization
+	 */
+	avg_init(avg_in2);
+	avg_init(avg_in4);
+	
+	SetSensor(IN_1, SENSOR_TOUCH);
+	SetSensorLight(IN_2);
+	SetSensorLight(IN_3);
+	mv_mode = 1;
+	old_mv_mode = 1;
+	power = 25;
+	engine_flag = OUT_AC;	
+
+	while(true)
+	{
+		/* 
+		 * Sensor phase 
+		 * Enviroment snapshot
+  		 */
+		us_front1 = Sensor(IN_3);
+		avg_append(avg_in4, us_front1);
+		us_side1 = Sensor(IN_2);
+		avg_append(avg_in2,us_side1);
+		us_front = avg_getval(avg_in4);
+		us_side = avg_getval(avg_in2);
+
+		/*
+		 * Decision phase
+		 * Algorithm
+		 * 527 - klucz`
+   		 */
+		
+		if(SENSOR_1 == 1)
+		{
+			mv_mode = BACKWARD;
+		}
+		else
+		{
+			if(us_side > TRESHOLD_S) 
+			{	
+				mv_mode = SIDEWAYS_L;
+			}
+			else
+			{
+				if(us_front > TRESHOLD_F)
+				{
+					mv_mode = FORWARD;
+				}
+				else
+				{
+					mv_mode = TURN_RIGHT;
+				}
+			}
+		}
+		
+		NumOut(0,8,us_side);
+		NumOut(0,16,us_side1);
+		NumOut(0,24,us_front);
+		NumOut(0,32,us_front1);
+		NumOut(0,0,mv_mode);
+		
+
+		/*
+		 * Movement phase
+		 */
+		switch(mv_mode)
+		{
+			case NO_CHANGE :
+			{
+				break;
+			}
+			case STOP :
+			{
+				if( mv_mode != old_mv_mode )
+				{
+					Off(OUT_AC);
+					Wait(OFF_WAIT);
+				}
+				//mv_mode = NO_CHANGE;
+				old_mv_mode = mv_mode;
+				break;
+			}
+			case FORWARD :
+			{
+				if( mv_mode != old_mv_mode )
+				{
+					Off(OUT_AC);
+					Wait(OFF_WAIT);
+				}
+				engine_flag = OUT_AC;
+				OnRev(OUT_AC, power);
+				old_mv_mode = mv_mode;
+				//mv_mode = NO_CHANGE;
+				break;
+			}
+			case BACKWARD :
+			{
+				if( mv_mode != old_mv_mode )
+				{
+					Off(OUT_AC);
+					Wait(OFF_WAIT);
+				}
+                                engine_flag = OUT_AC;
+                                OnFwd(OUT_AC, power);
+				Wait(1000);
+				Off(OUT_AC);
+				Wait(OFF_WAIT);
+				OnFwd(OUT_C, power);
+				OnRev(OUT_A, power);
+				Wait(500);
+				old_mv_mode = mv_mode;
+				//mv_mode = NO_CHANGE;
+				break;
+			}
+			case SIDEWAYS_L :
+			{
+				if( mv_mode != old_mv_mode )
+				{
+					Off(OUT_AC);
+					Wait(OFF_WAIT);
+				}
+				OnFwd(OUT_A, power);
+				OnRev(OUT_C, power);
+				Wait(250);
+				Off(OUT_AC);
+				Wait(OFF_WAIT);
+				OnRev(OUT_AC, power);
+				old_mv_mode = mv_mode;
+				break;
+			}
+			case TURN_LEFT :
+			{
+				if( mv_mode != old_mv_mode )
+				{
+					Off(OUT_AC);
+					Wait(OFF_WAIT);
+				}
+				engine_flag = OUT_AC;
+				OnFwd(OUT_A, power);
+				OnRev(OUT_C, power);
+				old_mv_mode = mv_mode;
+				//mv_mode = NO_CHANGE;
+				//Wait(TURN_TIME);
+				break;
+			}
+			case TURN_RIGHT :
+			{
+				if( mv_mode != old_mv_mode )
+				{
+					Off(OUT_AC);
+					Wait(OFF_WAIT);
+				}
+				engine_flag = OUT_AC;
+				OnRev(OUT_A, power);
+				OnFwd(OUT_C, power);
+				old_mv_mode = mv_mode;
+				//mv_mode = NO_CHANGE;
+				//Wait(TURN_TIME);
+				break; 
+			}
+			default :
+			{
+				break;
+			}
+			
+		}
+		//NumOut(0,16,mv_mode);
+		
+		/* 
+		 * Coffee time
+		 */
+		Wait(DELAY);
+	}
+
+}
+
+
