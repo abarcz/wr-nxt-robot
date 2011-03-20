@@ -1,0 +1,56 @@
+int values[];
+ArrayInit(values, 0, 10); // allocate 10 elements = 0
+
+unsigned int Sensor (const byte & port) [inline]
+
+byte SensorUS (const byte port) [inline]
+Read ultrasonic sensor value. Return the ultrasonic sensor distance value. Since an ultrasonic sensor is an I2C digital sensor its value cannot be read using the standard Sensor(n) value. The port must be configured as a Lowspeed port before using this function.
+
+bool SensorBoolean (const byte port) [inline]
+Read sensor boolean value. Return the boolean value of a sensor on the specified port. Boolean conversion is either done based on preset cutoffs, or a slope parameter specified by calling SetSensorMode.
+
+
+
+SetSensor(IN_1,SENSOR_TOUCH);
+if (SENSOR_1 == 1) {}
+
+#define turn_right(s,t)  OnFwd(OUT_A, s);OnRev(OUT_B, s);Wait(t);
+#define turn_left(s,t)   OnRev(OUT_A, s);OnFwd(OUT_B, s);Wait(t);
+#define forwards(s,t)    OnFwd(OUT_AB, s);Wait(t);
+#define backwards(s,t)   OnRev(OUT_AB, s);Wait(t);
+
+void ResetAllTachoCounts (byte outputs)
+Reset all tachometer counters.
+
+long MotorTachoCount (byte output)
+Get motor tachometer counter.
+
+long MotorTachoLimit (byte output)
+Get motor tachometer limit.
+
+task main(){
+   byte handle;
+   if (CreateFile("ASCII.txt", 2048, handle) == NO_ERR) {
+
+   for (int i=0; i < 256; i++) {
+      string s = NumToStr(i);
+      int slen = StrLen(s);
+      WriteString(handle, s, slen);
+      WriteLn(handle, i);
+   }
+   CloseFile(handle);
+  }
+}
+
+#define NEAR 15 //cm
+
+task main(){
+   SetSensorLowspeed(IN_4);
+   while(true){
+     OnFwd(OUT_AC,50);
+     while(SensorUS(IN_4)>NEAR);
+     Off(OUT_AC);
+     OnRev(OUT_C,100);
+     Wait(800);
+   }
+}
