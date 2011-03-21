@@ -54,3 +54,17 @@ task main(){
      Wait(800);
    }
 }
+
+NXC API provides constants for use in the NumOut and TextOut functions
+which make it possible to specify LCD line numbers between 1 and 8 with line 1
+being at the top of the screen and line 8 being at the bottom of the screen. These constants
+(LCD_LINE1 (gorna linia), LCD_LINE2, LCD_LINE3, LCD_LINE4, LCD_LINE5, LCD_-
+LINE6, LCD_LINE7, LCD_LINE8)
+
+char TextOut (int x, int y, string str, unsigned long options = DRAW_OPT_NORMAL) [inline]
+
+string NumToStr (variant num)
+Convert number to string.
+
+string StrCat (string str1, string str2, string strN)
+Concatenate strings.
