@@ -68,3 +68,9 @@ Convert number to string.
 
 string StrCat (string str1, string str2, string strN)
 Concatenate strings.
+
+float cosd (float x) [inline]
+Compute cosine (degrees). Computes the cosine of an angle of x degrees.
+float sind (float x) [inline]
+Compute sine (degrees). Computes the sine of an angle of x degrees.
+

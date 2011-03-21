@@ -39,7 +39,9 @@ struct move_str
 	int last_dir;
 	int last_pwr;
 	long last_tacho;
-	
+	int curr_angle;		// current angle (in degrees) - starting angle is 0deg
+	long vx;			// distance travelled in 'x' direction since init
+	long vy;			// distance travelled in 'y' direction since init
 };
 
 /* global container for robot moves data */
@@ -66,14 +68,25 @@ void eng_init ()
 	robot_mov.last_dir = M_NONE;
 	robot_mov.last_pwr = 0;
 	robot_mov.last_tacho = 0;
+	robot_mov.curr_angle = 0;
+	robot_mov.vx = 0;
+	robot_mov.vy = 0;
 	RESET_TACHO();
 }
 
+/* for internal use only! adds the path (from tahometer) to the vx, vy deviations */
+void add_path (long v)
+{
+	robot_mov.vx += v * cosd(robot_mov.angle - 90);
+	robot_mov.vy += v * sind(robot_mov.angle - 90);
+}
+	
+
 void eng_fwd (char power)
 {
-	long curr_tacho = GET_TACHO();
-	if (robot_mov.last_dir != M_FWD)
+	if (robot_mov.last_dir == M_REV)
 	{
+		add_path(GET_TAHO());
 		RESET_TACHO();
 	}
 	ON_FWD(power);
@@ -83,14 +96,54 @@ void eng_fwd (char power)
 
 void eng_rev (char power)
 {
-	long curr_tacho = GET_TACHO();
-	if (robot_mov.last_dir != M_REV)
+	if (robot_mov.last_dir == M_FWD)
 	{
+		add_path(GET_TAHO());
 		RESET_TACHO();
 	}
 	ON_REV(power);
 	robot_mov.last_dir = M_REV;
 	robot_mov.last_pwr = power;
+}
+
+void eng_turn_left (int angle)
+{
+	int turn_time;
+	if (angle > 360)
+		return;
+	add_path(GET_TAHO());			// save taho from last move
+	turn_time = A360_TURNTIME / (360 / angle);
+	ON_LEFT(TURN_PWR);
+	WAIT(turn_time);
+	robot_mov.curr_angle += angle;	// update the robot's angle information
+	RESET_TACHO();					// reset taho for the next move
+	/* return to last move mode */
+	if (robot_mov.last_dir == M_FWD)
+		ON_FWD(robot_mov.last_pwr);
+	else if (robot_mov.last_dir == M_REV)
+		ON_REV(robot_mov.last_pwr);
+	else
+		ENG_STOP();
+}
+
+void eng_turn_right (int angle)
+{
+	int turn_time;
+	if (angle > 360)
+		return;
+	add_path(GET_TAHO());
+	turn_time = A360_TURNTIME / (360 / angle);
+	ON_RIGHT(TURN_PWR);
+	WAIT(turn_time);
+	robot_mov.curr_angle -= angle;
+	RESET_TACHO();
+	/* return to last move mode */
+	if (robot_mov.last_dir == M_FWD)
+		ON_FWD(robot_mov.last_pwr);
+	else if (robot_mov.last_dir == M_REV)
+		ON_REV(robot_mov.last_pwr);
+	else
+		ENG_STOP();
 }
 
 void eng_left (char power)
@@ -99,7 +152,6 @@ void eng_left (char power)
 	robot_mov.last_dir = M_LEFT;
 	robot_mov.last_pwr = power;
 }
-
 
 void eng_right (char power)
 {
@@ -121,40 +173,4 @@ bool tacho_changed ()
 	bool val = (robot_mov.last_tacho == GET_TACHO());
 	robot_mov.last_tacho = GET_TACHO();
 	return val;
-}
-
-void eng_turn_left (int angle)
-{
-	int turn_time;
-	if (angle > 360)
-		return;
-	turn_time = A360_TURNTIME / (360 / angle);
-	ON_LEFT(TURN_PWR);
-	WAIT(turn_time);
-	
-	/* return to last move mode */
-	if (robot_mov.last_dir == M_FWD)
-		ON_FWD(robot_mov.last_pwr);
-	else if (robot_mov.last_dir == M_REV)
-		ON_REV(robot_mov.last_pwr);
-	else
-		ENG_STOP();
-}
-
-void eng_turn_right (int angle)
-{
-	int turn_time;
-	if (angle > 360)
-		return;
-	turn_time = A360_TURNTIME / (360 / angle);
-	ON_RIGHT(TURN_PWR);
-	WAIT(turn_time);
-	
-	/* return to last move mode */
-	if (robot_mov.last_dir == M_FWD)
-		ON_FWD(robot_mov.last_pwr);
-	else if (robot_mov.last_dir == M_REV)
-		ON_REV(robot_mov.last_pwr);
-	else
-		ENG_STOP();
 }
