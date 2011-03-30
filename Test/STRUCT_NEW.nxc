@@ -1,6 +1,7 @@
 #include "avg_tab.h"
 #include "move.h"
 #include "communication.h"
+#include "pid.h"
 
 #define TURN_TIME 	500
 #define DELAY		100
