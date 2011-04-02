@@ -1,4 +1,6 @@
-/* global defines useful for debugging in GCC */
+/* 
+ * global defines useful for debugging in GCC 
+ */
 
 #ifndef NXC_DEBUG
 #define NXC_DEBUG

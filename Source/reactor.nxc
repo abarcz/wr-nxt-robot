@@ -1,16 +1,9 @@
+#include "utils.h"
 #include "communication.h"
 #include "move.h"
-#include "pid.h"
-#include "median_tab.h"
-#define CPWR_B 60	// base speed of robot
-#define CPWR_S 40	// slow speed of robot
-#define PWR_T 10
-#define PID_REF 10
-#define PID_MAX 50
-#define MIN_SPD 20
-#define FRONT_MIN 29
-#define DCORR_TT 50		// turn time for deviation correction
-#define DCORR_ST 100		// straight ride time between turns for dev corr
+#define CPWR_B 60			// base speed of robot
+#define CPWR_S 40			// slow speed of robot
+#define FRONT_MIN 29		// minimal front light distance from fence for safe operating
 #define FFRONTAL_REVT 300	// rev time if full frontal crash
 #define FFRONTAL_RANGLE 70
 #define LFRONTAL_REVT 300	// rev time if side left frontal crash
@@ -19,7 +12,7 @@
 #define RFRONTAL_RANGLE 80
 #define FRONT_TT 100		// turn time if danger ahead
 
-/* stain avoid */
+/* stain avoidance */
 #define STAIN_LIGHT 45		// if measurement < this, we've got a radioactive stain
 #define STAIN_REVT 450		// rev time if stain detected
 #define STAIN_RANGLE 40	
@@ -34,7 +27,7 @@
 #define GFI_FRONTAL_RANGLE 90
 #define GFI_FRONTAL_FWDT 300
 
-// sensors
+/* sensors */
 #define LIGHTFRPORT IN_2
 #define LIGHTDOWNPORT IN_1	// exchangeable with Sonic Side!
 #define SONSIDEPORT IN_1
@@ -46,68 +39,25 @@
 #define TOUCHL Sensor(TOUCHLPORT)
 #define TOUCHR Sensor(TOUCHRPORT)
 
-// states
+/* states */
 #define ST_STOP 0
 #define ST_FWD 1
-#define ST_CORR_L1 2	// phase 1 of left turn correction (must turn left) 
-#define ST_CORR_L2 3	// phase 2 of left turn correction
-#define ST_CORR_R1 4
-#define ST_CORR_R2 5
-#define ST_FRONTT 6	// danger's ahead, must turn
+#define ST_FRONTT 6	// danger's ahead, must slowdown
 #define ST_SCAN 7	// robot is scanning for the reactor
-#define ST_SCAN_GFI 8	// scanning for the reactor while in GO FOR IT state
-#define ST_GO_FOR_IT 99 // go fwd for the reactor
+#define ST_GO_FOR_IT 90 // go fwd for the reactor
+#define ST_SCAN_GFI 91	// scanning for the reactor while in GO FOR IT state
 #define ST_FINISHED 100 // reactor found, do nothing
-
-int PWR_B = CPWR_B;
-int rob_state;		// robot state for machine of states
-int reactor_spotted = 0;
-int last_scan_val = 0;
-
-
-
-int min_i (int a, int b)
-{
-	if (a<b)
-		return a;
-	else 
-		return b;
-}
-
-int max_i (int a, int b)
-{
-	if (a>b)
-		return a;
-	else 
-		return b;
-}
-
-
-int abs_i (int a)
-{
-	if (a < 0)
-		return -a;
-	else 
-		return a;
-}
 
 task main ()
 {
-	eng_init();
-	int deviation = 0;
-	int pid_out = 0;
-	int power;
-	int power_corr_saved;
+	int PWR_B = CPWR_B;			// base speed of the robot
+	int rob_state;				// robot state for machine of states
+	int reactor_spotted = 0;
+	int last_scan_val = 0;
 	int time_count = 0;			// counts the time between reactor scans
 	int scan_count = 0;			// counts scan rounds
-	int time_count_gfi = 0;			// counts the time between scans when in GO_FOR_IT mode
-	pid_str pid_side;
-	pid_init(pid_side, 5, 20, 0);
-	pid_str	pid_reactor;			// pid for reactor
-	pid_init(pid_reactor, 2, 0, 0);
-	MEDIAN_EL med_tab[MEDIAN_NUM];
-	median_init(med_tab);
-
+	int time_count_gfi = 0;		// counts the time between scans when in GO_FOR_IT mode
+	int crash_rotcount = 0;		// counts rotations while in crash drawback reactor quest mode
 	unsigned int random_arc = 0;
 	
 	// initialize sensors
@@ -119,15 +69,6 @@ task main ()
 	SetSensorMode(LIGHTFRPORT, SENSOR_MODE_PERCENT);
 	//SetSensorLight(LIGHTFRPORT);
 
-	// initialize median for SONSIDE (unused)
-	int i, p;
-	for(i=0;i<MEDIAN_NUM;i++)
-	{
-		p = SONSIDE;
-		median_append(med_tab, p);
-	}
-	
-	//corr_append(side_dist, SensorUS(IN_3));
 	while(1)
 	{
 		// read sensors
@@ -142,16 +83,6 @@ task main ()
 		print_val(LCD_LINE3, "touchr", touchr);
 		byte light_fr = LIGHTFR;
 		print_val(LCD_LINE4, "light_f", light_fr);
-		
-		// calculate side distance deviation and pid value
-		deviation = REACTOR_CLOSE - light_fr;
-		pid_out = pid_getval(pid_reactor, deviation);
-		//print_val(LCD_LINE5, "PID", pid_out);
-
-		// calculate power correction for deviation reduction
-		//power = 20;//abs_i(pid_out * PWR_T / MAX_SIDE_DIST);
-		power = abs_i(pid_out * PWR_T / PID_MAX);
-		//print_val(LCD_LINE6, "POWER", power);
 	
 		// print robot's state
 		print_val(LCD_LINE8, "state", rob_state);
@@ -188,6 +119,7 @@ task main ()
 		else if (touchl)
 		{
 			time_count = 0;
+			// normal direction correction
 			if ((rob_state != ST_GO_FOR_IT) && (rob_state != ST_SCAN_GFI))
 			{
 				eng_rev(PWR_B);
@@ -195,18 +127,47 @@ task main ()
 				eng_turn_right(LFRONTAL_RANGLE);
 				rob_state = ST_STOP;
 			}
+			// correction if crashed next to the reactor
 			else
 			{
+				// drawback from the obstacle
 				eng_rev(PWR_B);
 				Wait(GFI_FRONTAL_REVT);
-				eng_turn_right(GFI_FRONTAL_RANGLE);
-				eng_fwd(PWR_B);
-				Wait(GFI_FRONTAL_FWDT);
 				eng_stop();
-				time_count = 0;
-				scan_count = 0;
-				last_scan_val = 0;
-				rob_state = ST_SCAN;
+				// check if reactor is left from the robot
+				light_fr = LIGHTFR;
+				last_scan_val = light_fr;
+				crash_rotcount = 0;
+				while (light_fr >= last_scan_val)
+				{
+					crash_rotcount++;
+					last_scan_val = light_fr;
+					eng_turn_left(13);
+					Wait(50);
+					light_fr = LIGHTFR;
+				}
+				eng_turn_right(GFI_FRONTAL_RANGLE);
+				// reactor was found left from the robot
+				if (light_fr > REACTOR_CLOSE)
+				{
+					eng_fwd(CPWR_S);
+					rob_state = ST_GO_FOR_IT;
+				}
+				// reactor must be NE from the robot
+				else
+				{
+					// rotate appropriately
+					eng_turn_right(crash_rotcount * 13 + 100);
+					// drawback from the reactor
+					eng_fwd(PWR_B);
+					Wait(GFI_FRONTAL_FWDT);
+					eng_stop();
+					// do a fullscan
+					time_count = 0;
+					scan_count = 0;
+					last_scan_val = 0;
+					rob_state = ST_SCAN;
+				}
 			}
 		}
 		else if (touchr)
@@ -238,7 +199,7 @@ task main ()
 		{
 			PlayToneEx(400,100,4,false);
 			reactor_spotted = 1;
-			if ((rob_state != ST_SCAN) && (rob_state != ST_GO_FOR_IT) && (rob_state != ST_SCAN_GFI) && (rob_state != ST_FINISHED))
+			if ((rob_state != ST_SCAN) && (rob_state != ST_GO_FOR_IT) && (rob_state != ST_SCAN_GFI))
 			{
 				time_count = 0;
 				scan_count = 0;
@@ -344,26 +305,9 @@ task main ()
 				eng_stop();
 				break;
 		}
-/*
-		if( pid_out == 0 )
-		{
-			//eng_stop();
-			eng_fwd(PWR_B);
-			rob_state = ST_FWD;
-		}
-		else if ( pid_out > 0 )
-		{
-			//eng_rev(power);
-			eng_fwd_reg(min_i(PWR_B + power, 75),max_i(PWR_B - power,10));
-			//rob_state = ST_CORR_R1;
-		}
-		else
-		{
-			//eng_rev(power);
-			eng_fwd_reg(max_i(PWR_B - power,10), min_i(PWR_B + power, 75));
-			//rob_state = ST_CORR_L1;
-		}
-*/
+		// assure mainloop exit
+		if (rob_state == ST_FINISHED)
+			break;
 		Wait(100);
 	}
 	ClearScreen();
