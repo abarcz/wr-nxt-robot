@@ -9,11 +9,11 @@ struct pid_str
 	long sum_e;		// sum of all e's since start of the algorithm
 };
 
-void pid_init(pid_str &p)
+void pid_init(pid_str &p, int kp, int kd, int ki)
 {
-	p.kp=5;
-	p.kd=20;
-	p.ki=0;
+	p.kp= kp;
+	p.kd= kd;
+	p.ki= ki;
 	p.last_e = 0;
 	p.sum_e = 0;
 }
