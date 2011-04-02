@@ -1,3 +1,4 @@
+//5, 20, 0
 #include "communication.h"
 #include "move.h"
 #include "pid.h"
@@ -75,7 +76,7 @@ task main ()
 	int power;
 	int power_corr_saved;
 	pid_str pid_side;
-	pid_init(pid_side);
+	pid_init(pid_side, 5, 20, 0);
 	MEDIAN_EL med_tab[MEDIAN_NUM];
 	median_init(med_tab);
 	

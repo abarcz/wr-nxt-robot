@@ -25,10 +25,14 @@
 #define STAIN_RANGLE 40	
 
 /* quest for the reactor */
-#define SCANS_INTERVAL 30	// how many program loops should pass between two reactor scans
-#define REACTOR_AHEAD 40	// if light_inactive > this, reactor was spotted
-#define REACTOR_CLOSE 80	// reactor is very close
-#define REACTOR_FOUND 90	// if l_i > this, reactor was found
+#define SCANS_INTERVAL 15	// how many program loops should pass between two reactor scans
+#define GFI_SCANS_INTERVAL 15	// loops between reactor scans when in GO_FOR_IT
+#define REACTOR_AHEAD 50	// if light_inactive > this, reactor was spotted
+#define REACTOR_CLOSE 60	// reactor is very close
+#define REACTOR_FOUND 80	// if l_i > this, reactor was found
+#define GFI_FRONTAL_REVT 200
+#define GFI_FRONTAL_RANGLE 90
+#define GFI_FRONTAL_FWDT 300
 
 // sensors
 #define LIGHTFRPORT IN_2
@@ -51,6 +55,7 @@
 #define ST_CORR_R2 5
 #define ST_FRONTT 6	// danger's ahead, must turn
 #define ST_SCAN 7	// robot is scanning for the reactor
+#define ST_SCAN_GFI 8	// scanning for the reactor while in GO FOR IT state
 #define ST_GO_FOR_IT 99 // go fwd for the reactor
 #define ST_FINISHED 100 // reactor found, do nothing
 
@@ -58,6 +63,8 @@ int PWR_B = CPWR_B;
 int rob_state;		// robot state for machine of states
 int reactor_spotted = 0;
 int last_scan_val = 0;
+
+
 
 int min_i (int a, int b)
 {
@@ -93,10 +100,15 @@ task main ()
 	int power_corr_saved;
 	int time_count = 0;			// counts the time between reactor scans
 	int scan_count = 0;			// counts scan rounds
+	int time_count_gfi = 0;			// counts the time between scans when in GO_FOR_IT mode
 	pid_str pid_side;
-	pid_init(pid_side);
+	pid_init(pid_side, 5, 20, 0);
+	pid_str	pid_reactor;			// pid for reactor
+	pid_init(pid_reactor, 2, 0, 0);
 	MEDIAN_EL med_tab[MEDIAN_NUM];
 	median_init(med_tab);
+
+	unsigned int random_arc = 0;
 	
 	// initialize sensors
 	SetSensor(TOUCHLPORT, SENSOR_TOUCH);
@@ -131,19 +143,22 @@ task main ()
 		byte light_fr = LIGHTFR;
 		print_val(LCD_LINE4, "light_f", light_fr);
 		
-	/*	// calculate side distance deviation and pid value
-		deviation = PID_REF - ultr;
-		pid_out = pid_getval(pid_side, deviation);
-		print_val(LCD_LINE5, "PID", pid_out);
+		// calculate side distance deviation and pid value
+		deviation = REACTOR_CLOSE - light_fr;
+		pid_out = pid_getval(pid_reactor, deviation);
+		//print_val(LCD_LINE5, "PID", pid_out);
 
 		// calculate power correction for deviation reduction
 		//power = 20;//abs_i(pid_out * PWR_T / MAX_SIDE_DIST);
 		power = abs_i(pid_out * PWR_T / PID_MAX);
-		print_val(LCD_LINE6, "POWER", power);
-	*/
+		//print_val(LCD_LINE6, "POWER", power);
+	
 		// print robot's state
 		print_val(LCD_LINE8, "state", rob_state);
 		
+		// Random twist
+		random_arc = Random(22);
+
 		// if reactor found, finish it		
 		if (light_fr > REACTOR_FOUND)
 		{
@@ -162,6 +177,7 @@ task main ()
 		// if full frontal crash, override
 		if (touchl && touchr)
 		{
+			time_count = 0;
 			eng_rev(PWR_B);
 			Wait(FFRONTAL_REVT);
 			eng_stop();
@@ -171,24 +187,58 @@ task main ()
 		// if side frontal crash, override
 		else if (touchl)
 		{
-			eng_rev(PWR_B);
-			Wait(LFRONTAL_REVT);
-			eng_turn_right(LFRONTAL_RANGLE);
-			rob_state = ST_STOP;
+			time_count = 0;
+			if ((rob_state != ST_GO_FOR_IT) && (rob_state != ST_SCAN_GFI))
+			{
+				eng_rev(PWR_B);
+				Wait(LFRONTAL_REVT);
+				eng_turn_right(LFRONTAL_RANGLE);
+				rob_state = ST_STOP;
+			}
+			else
+			{
+				eng_rev(PWR_B);
+				Wait(GFI_FRONTAL_REVT);
+				eng_turn_right(GFI_FRONTAL_RANGLE);
+				eng_fwd(PWR_B);
+				Wait(GFI_FRONTAL_FWDT);
+				eng_stop();
+				time_count = 0;
+				scan_count = 0;
+				last_scan_val = 0;
+				rob_state = ST_SCAN;
+			}
 		}
 		else if (touchr)
 		{
-			eng_rev(PWR_B);
-			Wait(RFRONTAL_REVT);
-			eng_turn_right(RFRONTAL_RANGLE);
-			rob_state = ST_STOP;
+			time_count = 0;
+			if ((rob_state != ST_GO_FOR_IT) && (rob_state != ST_SCAN_GFI))
+			{
+				eng_rev(PWR_B);
+				Wait(RFRONTAL_REVT);
+				eng_turn_right(RFRONTAL_RANGLE);
+				rob_state = ST_STOP;
+			}
+			else
+			{
+				eng_rev(PWR_B);
+				Wait(GFI_FRONTAL_REVT);
+				eng_turn_left(GFI_FRONTAL_RANGLE);
+				eng_fwd(PWR_B);
+				Wait(GFI_FRONTAL_FWDT);
+				eng_stop();
+				time_count = 0;
+				scan_count = 0;
+				last_scan_val = 0;
+				rob_state = ST_SCAN;
+			}
 		}
 		// look for reactor
 		if (light_fr > REACTOR_AHEAD)
 		{
 			PlayToneEx(400,100,4,false);
 			reactor_spotted = 1;
-			if ((rob_state != ST_SCAN) && (rob_state != ST_GO_FOR_IT))
+			if ((rob_state != ST_SCAN) && (rob_state != ST_GO_FOR_IT) && (rob_state != ST_SCAN_GFI) && (rob_state != ST_FINISHED))
 			{
 				time_count = 0;
 				scan_count = 0;
@@ -210,10 +260,14 @@ task main ()
 		switch (rob_state)
 		{
 			case ST_GO_FOR_IT:
+			
 				if (light_fr > REACTOR_CLOSE)
 					eng_fwd(CPWR_S);		// slowdown a bit
 				if (reactor_spotted == 0)
 					rob_state = ST_STOP;
+				time_count_gfi++;
+				if (time_count_gfi == GFI_SCANS_INTERVAL)
+					rob_state = ST_SCAN_GFI;
 				break;
 			case ST_STOP:
 				eng_fwd(PWR_B);	
@@ -247,6 +301,7 @@ task main ()
 					PlayToneEx(400,100,4,false);
 					reactor_spotted = 1;
 					eng_fwd(PWR_B);
+					time_count_gfi = 0;
 					rob_state = ST_GO_FOR_IT;
 				}
 				else
@@ -258,10 +313,35 @@ task main ()
 					{
 						scan_count = 0;
 						rob_state = ST_STOP;
+						eng_turn_right((random_arc*20)%360);
 					}
 				}
 				break;
+			case ST_SCAN_GFI:
+				light_fr = LIGHTFR;
+				last_scan_val = light_fr;
+				while (light_fr >= last_scan_val)
+				{
+					last_scan_val = light_fr;
+					eng_turn_right(13);
+					Wait(50);
+					light_fr = LIGHTFR;
+				}
+				last_scan_val = light_fr;
+				while(light_fr >= last_scan_val)
+				{
+					last_scan_val = light_fr;
+					eng_turn_left(13);
+					Wait(50);
+					light_fr = LIGHTFR;
+				}
+				eng_turn_right(13);
+				eng_fwd(PWR_B);
+				time_count_gfi = 0;
+				rob_state = ST_GO_FOR_IT;
+				break;
 			case ST_FINISHED:
+				eng_stop();
 				break;
 		}
 /*
