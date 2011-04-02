@@ -1,4 +1,6 @@
-#include "debug.h"
+/* 
+ * PID regulator 
+ */
 
 struct pid_str
 {
