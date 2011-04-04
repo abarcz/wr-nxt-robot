@@ -38,6 +38,7 @@ task main ()
 	int deviation = 0;			// deviation from correct side distance from fence
 	int pid_out = 0;			// PID regulation for side distance output
 	int power_corr;				// power correction calculated by PID
+	int ultr, touchl, touchr, light_fr;	// sensor measurements
 	pid_str pid_side;			// PID structure for fence side distance regulation
 	pid_init(pid_side, 5, 20, 0);
 	/*MEDIAN_EL med_tab[MEDIAN_NUM];
@@ -61,13 +62,13 @@ task main ()
 	{
 		// read sensors
 		ClearScreen();
-		byte ultr = SONSIDE;		
+		ultr = SONSIDE;		
 		print_val(LCD_LINE1, "ultra", ultr);	
-		byte touchl = TOUCHL;
+		touchl = TOUCHL;
 		print_val(LCD_LINE2, "touchl", touchl);
-		byte touchr = TOUCHR;
+		touchr = TOUCHR;
 		print_val(LCD_LINE3, "touchr", touchr);
-		byte light_fr = LIGHTFR;
+		light_fr = LIGHTFR;
 		print_val(LCD_LINE4, "light", light_fr);
 		
 		// calculate side distance deviation and pid value

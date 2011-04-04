@@ -14,18 +14,20 @@
 
 /* stain avoidance */
 #define STAIN_LIGHT 45		// if measurement < this, we've got a radioactive stain
-#define STAIN_REVT 450		// rev time if stain detected
-#define STAIN_RANGLE 40	
+#define STAIN_REVT 500		// rev time if stain detected
+#define STAIN_RANGLE 50	
 
 /* quest for the reactor */
 #define SCANS_INTERVAL 15	// how many program loops should pass between two reactor scans
-#define GFI_SCANS_INTERVAL 15	// loops between reactor scans when in GO_FOR_IT
+#define GFI_SCANS_INTERVAL 10	// loops between reactor scans when in GO_FOR_IT
 #define REACTOR_AHEAD 50	// if light_inactive > this, reactor was spotted
 #define REACTOR_CLOSE 60	// reactor is very close
-#define REACTOR_FOUND 80	// if l_i > this, reactor was found
-#define GFI_FRONTAL_REVT 200
-#define GFI_FRONTAL_RANGLE 90
-#define GFI_FRONTAL_FWDT 300
+#define REACTOR_FOUND 90	// if l_i > this, reactor was found
+#define GFI_SFRONTAL_REVT 1000
+#define GFI_SFRONTAL_RANGLE 60
+#define GFI_SFRONTAL_FWDT 1600
+#define GFI_MAX_ROT_FAILSAFE 100	// if rotations reach this num, robot is blocked
+#define GFI_MAX_TIME_NOREACT 70		// *100ms = time that the robot can spend in ST_GO_FOR_IT state if no reactor is seen
 
 /* sensors */
 #define LIGHTFRPORT IN_2
@@ -38,6 +40,7 @@
 #define SONSIDE SensorUS(SONSIDEPORT)
 #define TOUCHL Sensor(TOUCHLPORT)
 #define TOUCHR Sensor(TOUCHRPORT)
+#define ACTIVE_FRLIGHT 1	// if ==1, the front light temporarily switches to active mode
 
 /* states */
 #define ST_STOP 0
@@ -59,6 +62,10 @@ task main ()
 	int time_count_gfi = 0;		// counts the time between scans when in GO_FOR_IT mode
 	int crash_rotcount = 0;		// counts rotations while in crash drawback reactor quest mode
 	unsigned int random_arc = 0;
+	int random_dir = 0;
+	int light_dw, touchl, touchr, light_fr;	// sensor measurements
+	int light_active = 0;
+	long gfi_time_noreact_count = 0;	// counts time that the robot can spend in ST_GO_FOR_IT state if no reactor is seen
 	
 	// initialize sensors
 	SetSensor(TOUCHLPORT, SENSOR_TOUCH);
@@ -67,28 +74,42 @@ task main ()
 	SetSensorLight(LIGHTDOWNPORT);
 	SetSensorType(LIGHTFRPORT, SENSOR_TYPE_LIGHT_INACTIVE);
 	SetSensorMode(LIGHTFRPORT, SENSOR_MODE_PERCENT);
-	//SetSensorLight(LIGHTFRPORT);
-
+	//SetSensorLight(LIGHTFRPORT);;
 	while(1)
 	{
-		// read sensors
-		ClearScreen();
-		/*byte ultr = SONSIDE;		
-		print_val(LCD_LINE1, "ultra", ultr);	*/
-		byte light_dw = LIGHTDW;
-		print_val(LCD_LINE1, "light_d", light_dw);
-		byte touchl = TOUCHL;
-		print_val(LCD_LINE2, "touchl", touchl);
-		byte touchr = TOUCHR;
-		print_val(LCD_LINE3, "touchr", touchr);
-		byte light_fr = LIGHTFR;
-		print_val(LCD_LINE4, "light_f", light_fr);
-	
-		// print robot's state
-		print_val(LCD_LINE8, "state", rob_state);
+		if (ACTIVE_FRLIGHT && (rob_state != ST_GO_FOR_IT) && (rob_state != ST_SCAN_GFI) && (rob_state != ST_SCAN))
+		{
+			// put on the active light for a moment
+			SetSensorLight(LIGHTFRPORT);
+			Wait(50);
+			light_active = LIGHTFR;
+			// return to inactive light mode
+			SetSensorType(LIGHTFRPORT, SENSOR_TYPE_LIGHT_INACTIVE);
+			SetSensorMode(LIGHTFRPORT, SENSOR_MODE_PERCENT);
+			Wait(50);
+		}
+		else
+			Wait(100);
 		
 		// Random twist
-		random_arc = Random(22);
+		random_arc = Random(6);
+		random_dir = Random(128) % 2;
+		
+		// read sensors
+		ClearScreen();
+		/*int ultr = SONSIDE;		
+		print_val(LCD_LINE1, "ultra", ultr);	*/
+		light_dw = LIGHTDW;
+		print_val(LCD_LINE1, "light_d", light_dw);
+		touchl = TOUCHL;
+		print_val(LCD_LINE2, "touchl", touchl);
+		touchr = TOUCHR;
+		print_val(LCD_LINE3, "touchr", touchr);
+		light_fr = LIGHTFR;
+		print_val(LCD_LINE4, "light_f", light_fr);
+		print_val(LCD_LINE5, "light_A", light_active);
+		// print robot's state
+		print_val(LCD_LINE8, "state", rob_state);
 
 		// if reactor found, finish it		
 		if (light_fr > REACTOR_FOUND)
@@ -104,7 +125,10 @@ task main ()
 			Wait(STAIN_REVT);
 			eng_turn_right(STAIN_RANGLE);
 			rob_state = ST_STOP;
+			time_count = 0;
 		}
+		//eng_fwd(CPWR_S);
+		//rob_state = ST_GO_FOR_IT;
 		// if full frontal crash, override
 		if (touchl && touchr)
 		{
@@ -112,8 +136,17 @@ task main ()
 			eng_rev(PWR_B);
 			Wait(FFRONTAL_REVT);
 			eng_stop();
-			eng_turn_right(FFRONTAL_RANGLE);
-			rob_state = ST_STOP;
+			// normal direction correction
+			if ((rob_state != ST_GO_FOR_IT) && (rob_state != ST_SCAN_GFI))
+			{
+				eng_turn_right(FFRONTAL_RANGLE);
+				rob_state = ST_STOP;
+			}
+			else
+			{
+				time_count_gfi = 0;
+				rob_state = ST_SCAN_GFI;
+			}
 		}
 		// if side frontal crash, override
 		else if (touchl)
@@ -131,8 +164,8 @@ task main ()
 			else
 			{
 				// drawback from the obstacle
-				eng_rev(PWR_B);
-				Wait(GFI_FRONTAL_REVT);
+				eng_rev(CPWR_S);
+				Wait(GFI_SFRONTAL_REVT);
 				eng_stop();
 				// check if reactor is left from the robot
 				light_fr = LIGHTFR;
@@ -145,8 +178,14 @@ task main ()
 					eng_turn_left(13);
 					Wait(50);
 					light_fr = LIGHTFR;
+					if (crash_rotcount > GFI_MAX_ROT_FAILSAFE)
+					{
+						crash_rotcount = 1;
+						break;
+					}
 				}
-				eng_turn_right(GFI_FRONTAL_RANGLE);
+				//eng_turn_right(10);
+				crash_rotcount--;
 				// reactor was found left from the robot
 				if (light_fr > REACTOR_CLOSE)
 				{
@@ -157,16 +196,13 @@ task main ()
 				else
 				{
 					// rotate appropriately
-					eng_turn_right(crash_rotcount * 13 + 100);
+					eng_turn_right(crash_rotcount * 13 + GFI_SFRONTAL_RANGLE);
 					// drawback from the reactor
-					eng_fwd(PWR_B);
-					Wait(GFI_FRONTAL_FWDT);
+					eng_fwd(CPWR_S);
+					Wait(GFI_SFRONTAL_FWDT);
 					eng_stop();
-					// do a fullscan
-					time_count = 0;
-					scan_count = 0;
-					last_scan_val = 0;
-					rob_state = ST_SCAN;
+					eng_turn_left(crash_rotcount * 13 + GFI_SFRONTAL_RANGLE);
+					rob_state = ST_SCAN_GFI;
 				}
 			}
 		}
@@ -180,18 +216,50 @@ task main ()
 				eng_turn_right(RFRONTAL_RANGLE);
 				rob_state = ST_STOP;
 			}
+			// correction if crashed next to the reactor
 			else
 			{
-				eng_rev(PWR_B);
-				Wait(GFI_FRONTAL_REVT);
-				eng_turn_left(GFI_FRONTAL_RANGLE);
-				eng_fwd(PWR_B);
-				Wait(GFI_FRONTAL_FWDT);
+				// drawback from the obstacle
+				eng_rev(CPWR_S);
+				Wait(GFI_SFRONTAL_REVT);
 				eng_stop();
-				time_count = 0;
-				scan_count = 0;
-				last_scan_val = 0;
-				rob_state = ST_SCAN;
+				// check if reactor is right from the robot
+				light_fr = LIGHTFR;
+				last_scan_val = light_fr;
+				crash_rotcount = 0;
+				while (light_fr >= last_scan_val)
+				{
+					crash_rotcount++;
+					last_scan_val = light_fr;
+					eng_turn_right(13);
+					Wait(50);
+					light_fr = LIGHTFR;
+					if (crash_rotcount > GFI_MAX_ROT_FAILSAFE)
+					{
+						crash_rotcount = 1;
+						break;
+					}
+				}
+				//eng_turn_left(10);
+				crash_rotcount--;
+				// reactor was found left from the robot
+				if (light_fr > REACTOR_CLOSE)
+				{
+					eng_fwd(CPWR_S);
+					rob_state = ST_GO_FOR_IT;
+				}
+				// reactor must be NW from the robot
+				else
+				{
+					// rotate appropriately
+					eng_turn_left(crash_rotcount * 13 + GFI_SFRONTAL_RANGLE);
+					// drawback from the reactor
+					eng_fwd(CPWR_S);
+					Wait(GFI_SFRONTAL_FWDT);
+					eng_stop();
+					eng_turn_right(crash_rotcount * 13 + GFI_SFRONTAL_RANGLE);
+					rob_state = ST_SCAN_GFI;
+				}
 			}
 		}
 		// look for reactor
@@ -221,38 +289,50 @@ task main ()
 		switch (rob_state)
 		{
 			case ST_GO_FOR_IT:
-			
-				if (light_fr > REACTOR_CLOSE)
+				time_count = 0;
+				//if (light_fr > REACTOR_CLOSE)
 					eng_fwd(CPWR_S);		// slowdown a bit
-				if (reactor_spotted == 0)
-					rob_state = ST_STOP;
 				time_count_gfi++;
+				// direction correction
 				if (time_count_gfi == GFI_SCANS_INTERVAL)
 					rob_state = ST_SCAN_GFI;
+				// failsafe timeout
+				if (reactor_spotted == 0)
+				{
+					// quit gfi mode if timeout
+					if (gfi_time_noreact_count > GFI_MAX_TIME_NOREACT)
+						rob_state = ST_STOP;
+					gfi_time_noreact_count++;
+				}
+				else
+					gfi_time_noreact_count = 0;
 				break;
 			case ST_STOP:
 				eng_fwd(PWR_B);	
 				rob_state = ST_FWD;
 				break;
 			case ST_FWD:
-				//if (light_fr < FRONT_MIN)
-				//{
-				//	PWR_B = CPWR_S;		// slowspeed mode
-					//eng_fwd_reg(PWR_B, 0);
-					//Wait(FRONT_TT);
-					//rob_state = ST_FRONTT;
-				//}
-				//else
-					PWR_B = CPWR_B;
-				break;
-			case ST_FRONTT:
-				if (light_fr >= FRONT_MIN)
-					rob_state = ST_FWD;
-				else
+				if (ACTIVE_FRLIGHT)
 				{
-					eng_fwd_reg(PWR_B, 0);
-					Wait(FRONT_TT);
+					if (light_active < FRONT_MIN) 
+					{
+						PWR_B = CPWR_S;		// slowspeed mode
+					}
+					else
+						PWR_B = CPWR_B;
 				}
+				else
+					PWR_B = CPWR_B;
+				eng_fwd(PWR_B);
+				break;
+			//case ST_FRONTT:
+			//	if (light_fr >= FRONT_MIN)
+			//		rob_state = ST_FWD;
+			//	else
+			//	{
+			//		eng_fwd_reg(PWR_B, 0);
+			//		Wait(FRONT_TT);
+			//	}
 				break;
 			case ST_SCAN:
 				time_count = 0;
@@ -274,29 +354,40 @@ task main ()
 					{
 						scan_count = 0;
 						rob_state = ST_STOP;
-						eng_turn_right((random_arc*20)%360);
+						if (random_dir == 1)
+							eng_turn_right((random_arc*20)%360);
+						else
+							eng_turn_left((random_arc*20)%360);
 					}
 				}
 				break;
 			case ST_SCAN_GFI:
 				light_fr = LIGHTFR;
 				last_scan_val = light_fr;
+				int rot_count = 0;
 				while (light_fr >= last_scan_val)
 				{
 					last_scan_val = light_fr;
 					eng_turn_right(13);
-					Wait(50);
+					Wait(200);
 					light_fr = LIGHTFR;
+					rot_count++;
+					if (rot_count > GFI_MAX_ROT_FAILSAFE)
+						break;
 				}
+				rot_count = 0;
 				last_scan_val = light_fr;
 				while(light_fr >= last_scan_val)
 				{
 					last_scan_val = light_fr;
 					eng_turn_left(13);
-					Wait(50);
+					Wait(200);
 					light_fr = LIGHTFR;
+					rot_count++;
+					if (rot_count > GFI_MAX_ROT_FAILSAFE)
+						break;
 				}
-				eng_turn_right(13);
+				//eng_turn_right(10);
 				eng_fwd(PWR_B);
 				time_count_gfi = 0;
 				rob_state = ST_GO_FOR_IT;
@@ -308,9 +399,13 @@ task main ()
 		// assure mainloop exit
 		if (rob_state == ST_FINISHED)
 			break;
-		Wait(100);
 	}
+	PlayToneEx(500,200,5,false);
+	Wait(200);
+	PlayToneEx(700,400,5,false);
 	ClearScreen();
 	print_text(LCD_LINE1, "TARGET ACQUIRED!");
+	light_fr = LIGHTFR;
+	print_val(LCD_LINE8, "light_fr", light_fr);
 	while (1) {}
 }
