@@ -13,6 +13,8 @@
 #define C5 523
 
 // Melodies
+
+//----- Queen - We Are The Champions -----
 int champions_num = 22;
 int champions_tones[22] =
 							{
@@ -64,13 +66,17 @@ int champions_durations[22] =
 								EIGH,
 								WHOL
 							};
+//----------------------------------------
 
 void melody(int tones[], int durations[], int numofnotes)
 {
 	int i = 0;
 	for(i = 0; i < numofnotes; i++ )
 	{
-		PlayToneEx(tones[i], durations[i], 4, false);
+		if(tones[i] == 0)
+			Wait(durations[i]);
+		else
+			PlayToneEx(tones[i], durations[i], 4, false);
 	}
 }
 
