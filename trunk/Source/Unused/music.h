@@ -1,3 +1,4 @@
+// Notes
 #define EIGH QUAR/2
 #define QUAR 631	// quarternote in miliseconds in 95 bpm
 #define HALF 2*QUAR
@@ -41,7 +42,7 @@ int champions_tones[22] =
 								F5,
 								D4
 							};
-int champions_durations[22] =
+int champions_notes[22] =
 							{
 								HALF,
 								EIGH,
@@ -68,15 +69,15 @@ int champions_durations[22] =
 							};
 //----------------------------------------
 
-void melody(int tones[], int durations[], int numofnotes)
+void melody(int tones[], int notes[], int numofnotes)
 {
 	int i = 0;
 	for(i = 0; i < numofnotes; i++ )
 	{
 		if(tones[i] == 0)
-			Wait(durations[i]);
+			Wait(notes[i]);
 		else
-			PlayToneEx(tones[i], durations[i], 4, false);
+			PlayToneEx(tones[i], notes[i], 4, false);
 	}
 }
 
