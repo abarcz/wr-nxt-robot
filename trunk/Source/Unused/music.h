@@ -74,6 +74,5 @@ void melody(int tones[], int durations[], int numofnotes)
 	}
 }
 
-task main(){}
 
 
