@@ -1,23 +1,29 @@
 // Notes
-#define EIGH QUAR/2
+#define EIGH 315
 #define QUAR 631	// quarternote in miliseconds in 95 bpm
-#define HALF 2*QUAR
-#define WHOL 4*QUAR
+#define HALF 1262
+#define WHOL 2524
 // Tones
 #define F5 698
 #define E5 659
 #define C4 261
 #define A4 440
-#define D4 293
+#define D4 586//293
 #define G5 784
 #define A5 880
-#define C5 523
+#define C5 1046
 
 // Melodies
 
 //----- Queen - We Are The Champions -----
-int champions_num = 22;
-int champions_tones[22] =
+
+//----------------------------------------
+
+void melody()
+{
+
+	int numofnotes = 22;
+	int tones[22] =
 							{
 								F5,
 								E5,
@@ -42,7 +48,7 @@ int champions_tones[22] =
 								F5,
 								D4
 							};
-int champions_notes[22] =
+	int notes[22] =
 							{
 								HALF,
 								EIGH,
@@ -67,18 +73,26 @@ int champions_notes[22] =
 								EIGH,
 								WHOL
 							};
-//----------------------------------------
 
-void melody(int tones[], int notes[], int numofnotes)
-{
 	int i = 0;
+	int temptone;
+	int tempnote;
 	for(i = 0; i < numofnotes; i++ )
 	{
-		if(tones[i] == 0)
-			Wait(notes[i]);
+		temptone = tones[i];
+		tempnote = notes[i];
+
+		if(temptone == 0)
+		{
+			Wait(tempnote);
+		}	
 		else
-			PlayToneEx(tones[i], notes[i], 4, false);
+		{
+			PlayToneEx(temptone, tempnote, 4, false);
+			Wait(tempnote);
+		}
 	}
+	
 }
 
 
