@@ -1,6 +1,7 @@
 #include "utils.h"
 #include "communication.h"
 #include "move.h"
+#include "music.h"
 #define CPWR_B 60			// base speed of robot
 #define CPWR_S 40			// slow speed of robot
 #define FRONT_MIN 29		// minimal front light distance from fence for safe operating
@@ -26,7 +27,7 @@
 #define GFI_SFRONTAL_REVT 1000
 #define GFI_SFRONTAL_RANGLE 60
 #define GFI_SFRONTAL_FWDT 1600
-#define GFI_MAX_ROT_FAILSAFE 100	// if rotations reach this num, robot is blocked
+#define GFI_MAX_ROT_FAILSAFE 20	// if rotations reach this num, robot is blocked
 #define GFI_MAX_TIME_NOREACT 70		// *100ms = time that the robot can spend in ST_GO_FOR_IT state if no reactor is seen
 
 /* sensors */
@@ -80,12 +81,12 @@ task main ()
 		if (ACTIVE_FRLIGHT && (rob_state != ST_GO_FOR_IT) && (rob_state != ST_SCAN_GFI) && (rob_state != ST_SCAN))
 		{
 			// put on the active light for a moment
-			SetSensorLight(LIGHTFRPORT);
+			//SetSensorLight(LIGHTFRPORT);
 			Wait(50);
 			light_active = LIGHTFR;
 			// return to inactive light mode
-			SetSensorType(LIGHTFRPORT, SENSOR_TYPE_LIGHT_INACTIVE);
-			SetSensorMode(LIGHTFRPORT, SENSOR_MODE_PERCENT);
+			//SetSensorType(LIGHTFRPORT, SENSOR_TYPE_LIGHT_INACTIVE);
+			//SetSensorMode(LIGHTFRPORT, SENSOR_MODE_PERCENT);
 			Wait(50);
 		}
 		else
@@ -176,7 +177,7 @@ task main ()
 					crash_rotcount++;
 					last_scan_val = light_fr;
 					eng_turn_left(13);
-					Wait(50);
+					Wait(100);
 					light_fr = LIGHTFR;
 					if (crash_rotcount > GFI_MAX_ROT_FAILSAFE)
 					{
@@ -232,7 +233,7 @@ task main ()
 					crash_rotcount++;
 					last_scan_val = light_fr;
 					eng_turn_right(13);
-					Wait(50);
+					Wait(100);
 					light_fr = LIGHTFR;
 					if (crash_rotcount > GFI_MAX_ROT_FAILSAFE)
 					{
@@ -387,7 +388,7 @@ task main ()
 					if (rot_count > GFI_MAX_ROT_FAILSAFE)
 						break;
 				}
-				//eng_turn_right(10);
+				eng_turn_right(3);
 				eng_fwd(PWR_B);
 				time_count_gfi = 0;
 				rob_state = ST_GO_FOR_IT;
@@ -403,6 +404,8 @@ task main ()
 	PlayToneEx(500,200,5,false);
 	Wait(200);
 	PlayToneEx(700,400,5,false);
+	//melody();//champions_tones, champions_notes, champions_num);
+	Wait(500);
 	ClearScreen();
 	print_text(LCD_LINE1, "TARGET ACQUIRED!");
 	light_fr = LIGHTFR;

@@ -4,7 +4,7 @@
 #include "pid.h"
 #define CPWR_B 60	// base speed of robot
 #define CPWR_S 40	// slow speed of robot
-#define PWR_T 10	// used for calculating maximum pid correction
+#define PWR_T  10	// used for calculating maximum pid correction
 #define PID_REF 10	// correct ultrasonic distance from the fence, reference for PID
 #define PID_MAX 50	// used for calculating maximum pid correction
 #define FRONT_MIN 29	// minimal front light distance from fence for safe operating
@@ -40,7 +40,7 @@ task main ()
 	int power_corr;				// power correction calculated by PID
 	int ultr, touchl, touchr, light_fr;	// sensor measurements
 	pid_str pid_side;			// PID structure for fence side distance regulation
-	pid_init(pid_side, 5, 20, 0);
+	pid_init(pid_side, 5, 20, 0);		// 5, 20, 0 - dziala dobrze
 	/*MEDIAN_EL med_tab[MEDIAN_NUM];
 	median_init(med_tab);*/
 	
