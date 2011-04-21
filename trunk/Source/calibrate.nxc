@@ -1,0 +1,96 @@
+#include "utils.h"
+#include "communication.h"
+#include "move.h"
+#include "music.h"
+#define CPWR_B 60			// base speed of robot
+#define CPWR_S 40			// slow speed of robot
+#define FRONT_MIN 29		// minimal front light distance from fence for safe operating
+#define FFRONTAL_REVT 300	// rev time if full frontal crash
+#define FFRONTAL_RANGLE 70
+#define LFRONTAL_REVT 300	// rev time if side left frontal crash
+#define LFRONTAL_RANGLE 60	// angle (in degrees) to turn if side left frontal crash
+#define RFRONTAL_REVT 300
+#define RFRONTAL_RANGLE 80
+#define FRONT_TT 100		// turn time if danger ahead
+
+/* stain avoidance */
+#define STAIN_LIGHT 45		// if measurement < this, we've got a radioactive stain
+#define STAIN_REVT 500		// rev time if stain detected
+#define STAIN_RANGLE 50	
+
+/* quest for the reactor */
+#define SCANS_INTERVAL 15	// how many program loops should pass between two reactor scans
+#define GFI_SCANS_INTERVAL 10	// loops between reactor scans when in GO_FOR_IT
+#define REACTOR_AHEAD 50	// if light_inactive > this, reactor was spotted
+#define REACTOR_CLOSE 60	// reactor is very close
+#define REACTOR_FOUND 90	// if l_i > this, reactor was found
+#define GFI_SFRONTAL_REVT 1000
+#define GFI_SFRONTAL_RANGLE 60
+#define GFI_SFRONTAL_FWDT 1600
+#define GFI_MAX_ROT_FAILSAFE 20	// if rotations reach this num, robot is blocked
+#define GFI_MAX_TIME_NOREACT 70		// *100ms = time that the robot can spend in ST_GO_FOR_IT state if no reactor is seen
+
+/* sensors */
+#define LIGHTFRPORT IN_2
+#define LIGHTDOWNPORT IN_1	// exchangeable with Sonic Side!
+#define SONSIDEPORT IN_1
+#define TOUCHLPORT IN_4
+#define TOUCHRPORT IN_3
+#define LIGHTFR Sensor(LIGHTFRPORT)
+#define LIGHTDW Sensor(LIGHTDOWNPORT)	// exchangeable with Sonic Side!
+#define SONSIDE SensorUS(SONSIDEPORT)
+#define TOUCHL Sensor(TOUCHLPORT)
+#define TOUCHR Sensor(TOUCHRPORT)
+#define ACTIVE_FRLIGHT 1	// if ==1, the front light temporarily switches to active mode
+
+/* states */
+#define ST_STOP 0
+#define ST_FWD 1
+#define ST_FRONTT 6	// danger's ahead, must slowdown
+#define ST_SCAN 7	// robot is scanning for the reactor
+#define ST_GO_FOR_IT 90 // go fwd for the reactor
+#define ST_SCAN_GFI 91	// scanning for the reactor while in GO FOR IT state
+#define ST_FINISHED 100 // reactor found, do nothing
+
+task main ()
+{
+	int PWR_B = CPWR_B;			// base speed of the robot
+	int rob_state;				// robot state for machine of states
+	int reactor_spotted = 0;
+	int last_scan_val = 0;
+	int time_count = 0;			// counts the time between reactor scans
+	int scan_count = 0;			// counts scan rounds
+	int time_count_gfi = 0;		// counts the time between scans when in GO_FOR_IT mode
+	int crash_rotcount = 0;		// counts rotations while in crash drawback reactor quest mode
+	unsigned int random_arc = 0;
+	int random_dir = 0;
+	int light_dw, touchl, touchr, light_fr;	// sensor measurements
+	int light_active = 0;
+	long gfi_time_noreact_count = 0;	// counts time that the robot can spend in ST_GO_FOR_IT state if no reactor is seen
+	
+	// initialize sensors
+	SetSensor(TOUCHLPORT, SENSOR_TOUCH);
+	SetSensor(TOUCHRPORT, SENSOR_TOUCH);
+	//SetSensorLowspeed(SONSIDEPORT); 
+	SetSensorLight(LIGHTDOWNPORT);
+	SetSensorType(LIGHTFRPORT, SENSOR_TYPE_LIGHT_INACTIVE);
+	SetSensorMode(LIGHTFRPORT, SENSOR_MODE_PERCENT);
+	//SetSensorLight(LIGHTFRPORT);;
+
+	// test rotation
+	Wait(1000);	
+	eng_turn_right(360);
+	Wait(3000);
+	eng_turn_right(90);
+	Wait(3000);
+	/*eng_turn_left(360);
+	Wait(3000);
+	eng_turn_left(90);
+	*/
+	int i;
+	for(i=0;i<22;i++)
+	{
+		eng_turn_right(20);
+		Wait(100);
+	}
+}
