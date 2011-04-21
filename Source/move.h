@@ -20,8 +20,8 @@
 #define ENG_BRAKE() Off(MOT_ALL)
 
 /* angle rotate constants */
-#define A360_TURNTIME 890	// time needed to turn 360 degrees with const power
-#define A90_TURNTIME 255	// time needed to turn 90 degrees with const power
+#define A360_TURNTIME 850	// time needed to turn 360 degrees with const power
+#define A90_TURNTIME 235	// time needed to turn 90 degrees with const power
 #define TURN_PWR 75 		//power supplied during the turn
 	
 void eng_fwd_reg(char power_l, char power_r)

@@ -369,7 +369,7 @@ task main ()
 				while (light_fr >= last_scan_val)
 				{
 					last_scan_val = light_fr;
-					eng_turn_right(13);
+					eng_turn_right(10);
 					Wait(200);
 					light_fr = LIGHTFR;
 					rot_count++;
@@ -381,14 +381,14 @@ task main ()
 				while(light_fr >= last_scan_val)
 				{
 					last_scan_val = light_fr;
-					eng_turn_left(13);
+					eng_turn_left(10);
 					Wait(200);
 					light_fr = LIGHTFR;
 					rot_count++;
 					if (rot_count > GFI_MAX_ROT_FAILSAFE)
 						break;
 				}
-				eng_turn_right(3);
+				//eng_turn_right(3);
 				eng_fwd(PWR_B);
 				time_count_gfi = 0;
 				rob_state = ST_GO_FOR_IT;
@@ -401,10 +401,10 @@ task main ()
 		if (rob_state == ST_FINISHED)
 			break;
 	}
-	PlayToneEx(500,200,5,false);
-	Wait(200);
-	PlayToneEx(700,400,5,false);
-	//melody();//champions_tones, champions_notes, champions_num);
+	//PlayToneEx(500,200,5,false);
+	//Wait(200);
+	//PlayToneEx(700,400,5,false);
+	melody();//champions_tones, champions_notes, champions_num);
 	Wait(500);
 	ClearScreen();
 	print_text(LCD_LINE1, "TARGET ACQUIRED!");
