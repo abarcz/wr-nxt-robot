@@ -1,0 +1,148 @@
+\hypertarget{fence_8nxc}{
+\section{workspace/WR/Source/fence.nxc File Reference}
+\label{fence_8nxc}\index{workspace/WR/Source/fence.nxc@{workspace/WR/Source/fence.nxc}}
+}
+
+
+A program used for riding close to the band.  
+
+
+{\ttfamily \#include \char`\"{}utils.h\char`\"{}}\par
+{\ttfamily \#include \char`\"{}communication.h\char`\"{}}\par
+{\ttfamily \#include \char`\"{}move.h\char`\"{}}\par
+{\ttfamily \#include \char`\"{}pid.h\char`\"{}}\par
+\subsection*{Defines}
+\begin{DoxyCompactItemize}
+\item 
+\hypertarget{fence_8nxc_a738b9657b067e383cd066d4c7ca6f576}{
+\#define {\bfseries CPWR\_\-B}~60}
+\label{fence_8nxc_a738b9657b067e383cd066d4c7ca6f576}
+
+\item 
+\hypertarget{fence_8nxc_ae382ea7d9a3437076c5616056836377a}{
+\#define {\bfseries CPWR\_\-S}~40}
+\label{fence_8nxc_ae382ea7d9a3437076c5616056836377a}
+
+\item 
+\hypertarget{fence_8nxc_a542a0090a7c37b6404cf8ba31d59f57d}{
+\#define {\bfseries PWR\_\-T}~10}
+\label{fence_8nxc_a542a0090a7c37b6404cf8ba31d59f57d}
+
+\item 
+\hypertarget{fence_8nxc_a211c307420126f39f228195cf77ae83c}{
+\#define {\bfseries PID\_\-REF}~10}
+\label{fence_8nxc_a211c307420126f39f228195cf77ae83c}
+
+\item 
+\hypertarget{fence_8nxc_a2ded3bab320b6ac387798d39189fb505}{
+\#define {\bfseries PID\_\-MAX}~50}
+\label{fence_8nxc_a2ded3bab320b6ac387798d39189fb505}
+
+\item 
+\hypertarget{fence_8nxc_ac9341f36c8b85c8d70f06973c2d9a5bd}{
+\#define {\bfseries FRONT\_\-MIN}~29}
+\label{fence_8nxc_ac9341f36c8b85c8d70f06973c2d9a5bd}
+
+\item 
+\hypertarget{fence_8nxc_acb1164349a1fa4b7052e28f7c7c735d4}{
+\#define {\bfseries FFRONTAL\_\-REVT}~300}
+\label{fence_8nxc_acb1164349a1fa4b7052e28f7c7c735d4}
+
+\item 
+\hypertarget{fence_8nxc_abda398fa4722b8691dc8c52c733a2814}{
+\#define {\bfseries FFRONTAL\_\-RANGLE}~70}
+\label{fence_8nxc_abda398fa4722b8691dc8c52c733a2814}
+
+\item 
+\hypertarget{fence_8nxc_aac0491bc7a39228e57b85de235ef59eb}{
+\#define {\bfseries LFRONTAL\_\-REVT}~300}
+\label{fence_8nxc_aac0491bc7a39228e57b85de235ef59eb}
+
+\item 
+\hypertarget{fence_8nxc_ad19631fb45582ad9441719c376c07c3b}{
+\#define {\bfseries LFRONTAL\_\-RANGLE}~60}
+\label{fence_8nxc_ad19631fb45582ad9441719c376c07c3b}
+
+\item 
+\hypertarget{fence_8nxc_a623033e48068d57555d513a2d56d0c40}{
+\#define {\bfseries RFRONTAL\_\-REVT}~300}
+\label{fence_8nxc_a623033e48068d57555d513a2d56d0c40}
+
+\item 
+\hypertarget{fence_8nxc_a70438bca69ec65d9a29a9f120922464d}{
+\#define {\bfseries RFRONTAL\_\-RANGLE}~80}
+\label{fence_8nxc_a70438bca69ec65d9a29a9f120922464d}
+
+\item 
+\hypertarget{fence_8nxc_a7861c2174f24a87c43840f87f3cf8a14}{
+\#define {\bfseries FRONT\_\-TT}~100}
+\label{fence_8nxc_a7861c2174f24a87c43840f87f3cf8a14}
+
+\item 
+\hypertarget{fence_8nxc_ab9d3d1049b45438591608c99774c5cba}{
+\#define {\bfseries LIGHTFRPORT}~IN\_\-2}
+\label{fence_8nxc_ab9d3d1049b45438591608c99774c5cba}
+
+\item 
+\hypertarget{fence_8nxc_a73b327cc697b593b06f47bc6915ba9cf}{
+\#define {\bfseries SONSIDEPORT}~IN\_\-1}
+\label{fence_8nxc_a73b327cc697b593b06f47bc6915ba9cf}
+
+\item 
+\hypertarget{fence_8nxc_a867a2479cd5e144bc98b3e24bd48a79c}{
+\#define {\bfseries TOUCHLPORT}~IN\_\-4}
+\label{fence_8nxc_a867a2479cd5e144bc98b3e24bd48a79c}
+
+\item 
+\hypertarget{fence_8nxc_ac16330478e7b003e00f37e90e0c5bdf6}{
+\#define {\bfseries TOUCHRPORT}~IN\_\-3}
+\label{fence_8nxc_ac16330478e7b003e00f37e90e0c5bdf6}
+
+\item 
+\hypertarget{fence_8nxc_a26fd581a2d8a8f58a30535495c8d0843}{
+\#define {\bfseries LIGHTFR}~Sensor(LIGHTFRPORT)}
+\label{fence_8nxc_a26fd581a2d8a8f58a30535495c8d0843}
+
+\item 
+\hypertarget{fence_8nxc_aec1d71dea61f39acce761840c4ce0d27}{
+\#define {\bfseries SONSIDE}~SensorUS(SONSIDEPORT)}
+\label{fence_8nxc_aec1d71dea61f39acce761840c4ce0d27}
+
+\item 
+\hypertarget{fence_8nxc_a98c4f75c182ff1c7c6f3fb288f4f3857}{
+\#define {\bfseries TOUCHL}~Sensor(TOUCHLPORT)}
+\label{fence_8nxc_a98c4f75c182ff1c7c6f3fb288f4f3857}
+
+\item 
+\hypertarget{fence_8nxc_a6537370af17fd38a56bcf670d8db23e3}{
+\#define {\bfseries TOUCHR}~Sensor(TOUCHRPORT)}
+\label{fence_8nxc_a6537370af17fd38a56bcf670d8db23e3}
+
+\item 
+\hypertarget{fence_8nxc_a8ccbe4f289c6182e18589c6f2c6108ee}{
+\#define {\bfseries ST\_\-STOP}~0}
+\label{fence_8nxc_a8ccbe4f289c6182e18589c6f2c6108ee}
+
+\item 
+\hypertarget{fence_8nxc_abba849981e74e84eb3836d3c03c363a9}{
+\#define {\bfseries ST\_\-FWD}~1}
+\label{fence_8nxc_abba849981e74e84eb3836d3c03c363a9}
+
+\item 
+\hypertarget{fence_8nxc_a82671cbfd87d61e73ed46e39a25ea515}{
+\#define {\bfseries ST\_\-FRONTT}~6}
+\label{fence_8nxc_a82671cbfd87d61e73ed46e39a25ea515}
+
+\end{DoxyCompactItemize}
+\subsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hypertarget{fence_8nxc_a9a2af8e2cd81255d3bf384db4a382807}{
+task {\bfseries main} ()}
+\label{fence_8nxc_a9a2af8e2cd81255d3bf384db4a382807}
+
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+A program used for riding close to the band. 

@@ -1,0 +1,84 @@
+\hypertarget{music_8h}{
+\section{workspace/WR/Source/music.h File Reference}
+\label{music_8h}\index{workspace/WR/Source/music.h@{workspace/WR/Source/music.h}}
+}
+
+
+Allow robot to play music.  
+
+
+\subsection*{Defines}
+\begin{DoxyCompactItemize}
+\item 
+\hypertarget{music_8h_afe02956cb80066f7be3a9236959509f6}{
+\#define \hyperlink{music_8h_afe02956cb80066f7be3a9236959509f6}{EIGH}~QUAR/2}
+\label{music_8h_afe02956cb80066f7be3a9236959509f6}
+
+\begin{DoxyCompactList}\small\item\em Duration of the eight note in milliseconds in 95 bpm. \item\end{DoxyCompactList}\item 
+\hypertarget{music_8h_a48c4e95ce1e77e542bc91d54ca522965}{
+\#define \hyperlink{music_8h_a48c4e95ce1e77e542bc91d54ca522965}{QUAR}~631}
+\label{music_8h_a48c4e95ce1e77e542bc91d54ca522965}
+
+\begin{DoxyCompactList}\small\item\em Duration of the quarter note in milliseconds in 95 bpm. \item\end{DoxyCompactList}\item 
+\hypertarget{music_8h_a37c4c48ff47f0838f64b5a1fb3c803b2}{
+\#define \hyperlink{music_8h_a37c4c48ff47f0838f64b5a1fb3c803b2}{HALF}~2$\ast$QUAR}
+\label{music_8h_a37c4c48ff47f0838f64b5a1fb3c803b2}
+
+\begin{DoxyCompactList}\small\item\em Duration of the half note in milliseconds in 95 bpm. \item\end{DoxyCompactList}\item 
+\hypertarget{music_8h_ab7de8a7e78ddf7847db8e094dd27dd6d}{
+\#define \hyperlink{music_8h_ab7de8a7e78ddf7847db8e094dd27dd6d}{WHOL}~4$\ast$QUAR}
+\label{music_8h_ab7de8a7e78ddf7847db8e094dd27dd6d}
+
+\begin{DoxyCompactList}\small\item\em Duration of the whole note in milliseconds in 95 bpm. \item\end{DoxyCompactList}\item 
+\hypertarget{music_8h_a33a001184d6e389fd20132f7c21cf8ca}{
+\#define \hyperlink{music_8h_a33a001184d6e389fd20132f7c21cf8ca}{F5}~698}
+\label{music_8h_a33a001184d6e389fd20132f7c21cf8ca}
+
+\begin{DoxyCompactList}\small\item\em Frequency of F5 tone in Hz. \item\end{DoxyCompactList}\item 
+\hypertarget{music_8h_ab7fbe94783ad3846d0dfb3524eaeccda}{
+\#define \hyperlink{music_8h_ab7fbe94783ad3846d0dfb3524eaeccda}{E5}~659}
+\label{music_8h_ab7fbe94783ad3846d0dfb3524eaeccda}
+
+\begin{DoxyCompactList}\small\item\em Frequency of E5 tone in Hz. \item\end{DoxyCompactList}\item 
+\hypertarget{music_8h_acc39015f57b2efb8810b603f188bdf15}{
+\#define \hyperlink{music_8h_acc39015f57b2efb8810b603f188bdf15}{C4}~261}
+\label{music_8h_acc39015f57b2efb8810b603f188bdf15}
+
+\begin{DoxyCompactList}\small\item\em Frequency of C4 tone in Hz. \item\end{DoxyCompactList}\item 
+\hypertarget{music_8h_aa0a03ad95ca0cb887a11e321fa1c9519}{
+\#define \hyperlink{music_8h_aa0a03ad95ca0cb887a11e321fa1c9519}{A4}~440}
+\label{music_8h_aa0a03ad95ca0cb887a11e321fa1c9519}
+
+\begin{DoxyCompactList}\small\item\em Frequency of A4 tone in Hz. \item\end{DoxyCompactList}\item 
+\hypertarget{music_8h_a3d9bb178282c3cb69740c94ba1e48fed}{
+\#define \hyperlink{music_8h_a3d9bb178282c3cb69740c94ba1e48fed}{D4}~293}
+\label{music_8h_a3d9bb178282c3cb69740c94ba1e48fed}
+
+\begin{DoxyCompactList}\small\item\em Frequency of D4 tone in Hz. \item\end{DoxyCompactList}\item 
+\hypertarget{music_8h_a206f8f478aee56b55771546844d68a5f}{
+\#define \hyperlink{music_8h_a206f8f478aee56b55771546844d68a5f}{G5}~784}
+\label{music_8h_a206f8f478aee56b55771546844d68a5f}
+
+\begin{DoxyCompactList}\small\item\em Frequency of G5 tone in Hz. \item\end{DoxyCompactList}\item 
+\hypertarget{music_8h_a635a5115ac94c220c2de74fa24fd05b6}{
+\#define \hyperlink{music_8h_a635a5115ac94c220c2de74fa24fd05b6}{A5}~880}
+\label{music_8h_a635a5115ac94c220c2de74fa24fd05b6}
+
+\begin{DoxyCompactList}\small\item\em Frequency of A5 tone in Hz. \item\end{DoxyCompactList}\item 
+\hypertarget{music_8h_a3b69b61d9deb37b13911faf2cf5cf1d5}{
+\#define \hyperlink{music_8h_a3b69b61d9deb37b13911faf2cf5cf1d5}{C5}~523}
+\label{music_8h_a3b69b61d9deb37b13911faf2cf5cf1d5}
+
+\begin{DoxyCompactList}\small\item\em Frequency of C5 tone in Hz. \item\end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hypertarget{music_8h_a86d993aaf5222608d5755fecd64a1d5c}{
+void \hyperlink{music_8h_a86d993aaf5222608d5755fecd64a1d5c}{melody} ()}
+\label{music_8h_a86d993aaf5222608d5755fecd64a1d5c}
+
+\begin{DoxyCompactList}\small\item\em a function playing melody by following two tables: a table of tones (frequency to play) and a table of notes (duration of sound) \item\end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+Allow robot to play music. 
