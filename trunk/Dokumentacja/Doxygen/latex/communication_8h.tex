@@ -1,0 +1,45 @@
+\hypertarget{communication_8h}{
+\section{workspace/WR/Source/communication.h File Reference}
+\label{communication_8h}\index{workspace/WR/Source/communication.h@{workspace/WR/Source/communication.h}}
+}
+
+
+Functions for printing debug values to NXT LCD screen.  
+
+
+\subsection*{Defines}
+\begin{DoxyCompactItemize}
+\item 
+\hypertarget{communication_8h_aae1aafb43355c990c7e2b010f810ff12}{
+\#define \hyperlink{communication_8h_aae1aafb43355c990c7e2b010f810ff12}{print\_\-num}(y, v)~NumOut(0,y,v)}
+\label{communication_8h_aae1aafb43355c990c7e2b010f810ff12}
+
+\begin{DoxyCompactList}\small\item\em Print numbers easier. \item\end{DoxyCompactList}\item 
+\hypertarget{communication_8h_ac4070489bb16bc853eaf99222dd6d63b}{
+\#define \hyperlink{communication_8h_ac4070489bb16bc853eaf99222dd6d63b}{print\_\-text}(y, s)~TextOut(0,y,s)}
+\label{communication_8h_ac4070489bb16bc853eaf99222dd6d63b}
+
+\begin{DoxyCompactList}\small\item\em Print text easier. \item\end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \hyperlink{communication_8h_a8ec2e64c09b346fe4ce66696d86f9b5a}{print\_\-val} (int y, string s, long v)
+\begin{DoxyCompactList}\small\item\em prints \char`\"{}s: v\char`\"{} in the line y, where s is a string and v -\/ a number \item\end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+Functions for printing debug values to NXT LCD screen. 
+
+\subsection{Function Documentation}
+\hypertarget{communication_8h_a8ec2e64c09b346fe4ce66696d86f9b5a}{
+\index{communication.h@{communication.h}!print\_\-val@{print\_\-val}}
+\index{print\_\-val@{print\_\-val}!communication.h@{communication.h}}
+\subsubsection[{print\_\-val}]{\setlength{\rightskip}{0pt plus 5cm}void print\_\-val (int {\em y}, \/  string {\em s}, \/  long {\em v})}}
+\label{communication_8h_a8ec2e64c09b346fe4ce66696d86f9b5a}
+
+
+prints \char`\"{}s: v\char`\"{} in the line y, where s is a string and v -\/ a number 
+
+
+\begin{DoxyParams}{Parameters}
+\item[{\em y}]Line on LCD screen \item[{\em s}]Title of the line \item[{\em v}]Value to print \end{DoxyParams}
