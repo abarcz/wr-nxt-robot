@@ -42,35 +42,35 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
     </ul>
   </div>
 <h1>workspace/WR/Source/pid.h</h1><a href="pid_8h.html">Go to the documentation of this file.</a><div class="fragment"><pre class="fragment"><a name="l00001"></a>00001 
-<a name="l00009"></a><a class="code" href="structpid__str.html">00009</a> <span class="keyword">struct </span><a class="code" href="structpid__str.html" title="Structure representing a PID regulator.">pid_str</a>
-<a name="l00010"></a>00010 {
-<a name="l00011"></a>00011         <span class="keywordtype">int</span> kp;                 
-<a name="l00012"></a><a class="code" href="structpid__str.html#a0f9566f4e143fbbf1a8c4f3ab920f7cb">00012</a>         <span class="keywordtype">int</span> <a class="code" href="structpid__str.html#a0f9566f4e143fbbf1a8c4f3ab920f7cb">kd</a>;                 
-<a name="l00013"></a><a class="code" href="structpid__str.html#a1246caf4496665d0d9122ae001e9bbea">00013</a>         <span class="keywordtype">int</span> <a class="code" href="structpid__str.html#a1246caf4496665d0d9122ae001e9bbea">ki</a>;                 
-<a name="l00014"></a><a class="code" href="structpid__str.html#afba88804d3ae4faf2c06e0199d553745">00014</a>         <span class="keywordtype">long</span> <a class="code" href="structpid__str.html#afba88804d3ae4faf2c06e0199d553745">last_e</a>;    
-<a name="l00015"></a><a class="code" href="structpid__str.html#ab5da6edeb8d607bf45f9be8330079120">00015</a>         <span class="keywordtype">long</span> <a class="code" href="structpid__str.html#ab5da6edeb8d607bf45f9be8330079120">sum_e</a>;             
-<a name="l00016"></a>00016 };
-<a name="l00017"></a>00017 
-<a name="l00026"></a><a class="code" href="pid_8h.html#a0b2bf50a6c9f6ab29c0043e777b9bca1">00026</a> <span class="keywordtype">void</span> <a class="code" href="pid_8h.html#a0b2bf50a6c9f6ab29c0043e777b9bca1" title="Initialize PID regulator.">pid_init</a>(<a class="code" href="structpid__str.html" title="Structure representing a PID regulator.">pid_str</a> &amp;p, <span class="keywordtype">int</span> kp, <span class="keywordtype">int</span> kd, <span class="keywordtype">int</span> ki)
-<a name="l00027"></a>00027 {
-<a name="l00028"></a>00028         p.kp= kp;
-<a name="l00029"></a>00029         p.<a class="code" href="structpid__str.html#a0f9566f4e143fbbf1a8c4f3ab920f7cb">kd</a>= kd;
-<a name="l00030"></a>00030         p.<a class="code" href="structpid__str.html#a1246caf4496665d0d9122ae001e9bbea">ki</a>= ki;
-<a name="l00031"></a>00031         p.<a class="code" href="structpid__str.html#afba88804d3ae4faf2c06e0199d553745">last_e</a> = 0;
-<a name="l00032"></a>00032         p.<a class="code" href="structpid__str.html#ab5da6edeb8d607bf45f9be8330079120">sum_e</a> = 0;
-<a name="l00033"></a>00033 }
-<a name="l00034"></a>00034 
-<a name="l00041"></a><a class="code" href="pid_8h.html#a3d0ebdc592f3e8af789c8fe7eecf703c">00041</a> <span class="keywordtype">long</span> <a class="code" href="pid_8h.html#a3d0ebdc592f3e8af789c8fe7eecf703c" title="Get the PID regulation value for the current difference (epsilon).">pid_getval</a>(<a class="code" href="structpid__str.html" title="Structure representing a PID regulator.">pid_str</a> &amp;p, <span class="keywordtype">long</span> e)
-<a name="l00042"></a>00042 {
-<a name="l00043"></a>00043         <span class="keywordtype">long</span> val;
-<a name="l00044"></a>00044         p.<a class="code" href="structpid__str.html#ab5da6edeb8d607bf45f9be8330079120">sum_e</a> += e;
-<a name="l00045"></a>00045         val = p.kp * e + p.<a class="code" href="structpid__str.html#a0f9566f4e143fbbf1a8c4f3ab920f7cb">kd</a>*(e-p.<a class="code" href="structpid__str.html#afba88804d3ae4faf2c06e0199d553745">last_e</a>) + p.<a class="code" href="structpid__str.html#a1246caf4496665d0d9122ae001e9bbea">ki</a> * p.<a class="code" href="structpid__str.html#ab5da6edeb8d607bf45f9be8330079120">sum_e</a>;
-<a name="l00046"></a>00046         p.<a class="code" href="structpid__str.html#afba88804d3ae4faf2c06e0199d553745">last_e</a> = e;
-<a name="l00047"></a>00047         <span class="keywordflow">return</span> val;
-<a name="l00048"></a>00048 }
-<a name="l00049"></a>00049         
-<a name="l00050"></a>00050 
-<a name="l00051"></a>00051 
+<a name="l00010"></a><a class="code" href="structpid__str.html">00010</a> <span class="keyword">struct </span><a class="code" href="structpid__str.html" title="Structure representing a PID regulator.">pid_str</a>
+<a name="l00011"></a>00011 {
+<a name="l00016"></a><a class="code" href="structpid__str.html#a7c039d6ba7d0cc9d03fe3631f5ee5811">00016</a>         <span class="keywordtype">int</span> <a class="code" href="structpid__str.html#a7c039d6ba7d0cc9d03fe3631f5ee5811" title="Power of proportional part.">kp</a>;
+<a name="l00021"></a><a class="code" href="structpid__str.html#a0f9566f4e143fbbf1a8c4f3ab920f7cb">00021</a>         <span class="keywordtype">int</span> <a class="code" href="structpid__str.html#a0f9566f4e143fbbf1a8c4f3ab920f7cb" title="Power of derivative part.">kd</a>;
+<a name="l00026"></a><a class="code" href="structpid__str.html#a1246caf4496665d0d9122ae001e9bbea">00026</a>         <span class="keywordtype">int</span> <a class="code" href="structpid__str.html#a1246caf4496665d0d9122ae001e9bbea" title="Power of integral part.">ki</a>;
+<a name="l00031"></a><a class="code" href="structpid__str.html#afba88804d3ae4faf2c06e0199d553745">00031</a>         <span class="keywordtype">long</span> <a class="code" href="structpid__str.html#afba88804d3ae4faf2c06e0199d553745" title="Last difference (epsilon).">last_e</a>;
+<a name="l00036"></a><a class="code" href="structpid__str.html#ab5da6edeb8d607bf45f9be8330079120">00036</a>         <span class="keywordtype">long</span> <a class="code" href="structpid__str.html#ab5da6edeb8d607bf45f9be8330079120" title="Sum of all differences (epsilons) since start of the algorithm.">sum_e</a>;
+<a name="l00037"></a>00037 };
+<a name="l00038"></a>00038 
+<a name="l00047"></a><a class="code" href="pid_8h.html#a0b2bf50a6c9f6ab29c0043e777b9bca1">00047</a> <span class="keywordtype">void</span> <a class="code" href="pid_8h.html#a0b2bf50a6c9f6ab29c0043e777b9bca1" title="Initialize PID regulator.">pid_init</a>(<a class="code" href="structpid__str.html" title="Structure representing a PID regulator.">pid_str</a> &amp;p, <span class="keywordtype">int</span> kp, <span class="keywordtype">int</span> kd, <span class="keywordtype">int</span> ki)
+<a name="l00048"></a>00048 {
+<a name="l00049"></a>00049         p.<a class="code" href="structpid__str.html#a7c039d6ba7d0cc9d03fe3631f5ee5811" title="Power of proportional part.">kp</a>= kp;
+<a name="l00050"></a>00050         p.<a class="code" href="structpid__str.html#a0f9566f4e143fbbf1a8c4f3ab920f7cb" title="Power of derivative part.">kd</a>= kd;
+<a name="l00051"></a>00051         p.<a class="code" href="structpid__str.html#a1246caf4496665d0d9122ae001e9bbea" title="Power of integral part.">ki</a>= ki;
+<a name="l00052"></a>00052         p.<a class="code" href="structpid__str.html#afba88804d3ae4faf2c06e0199d553745" title="Last difference (epsilon).">last_e</a> = 0;
+<a name="l00053"></a>00053         p.<a class="code" href="structpid__str.html#ab5da6edeb8d607bf45f9be8330079120" title="Sum of all differences (epsilons) since start of the algorithm.">sum_e</a> = 0;
+<a name="l00054"></a>00054 }
+<a name="l00055"></a>00055 
+<a name="l00062"></a><a class="code" href="pid_8h.html#a3d0ebdc592f3e8af789c8fe7eecf703c">00062</a> <span class="keywordtype">long</span> <a class="code" href="pid_8h.html#a3d0ebdc592f3e8af789c8fe7eecf703c" title="Get the PID regulation value for the current difference (epsilon).">pid_getval</a>(<a class="code" href="structpid__str.html" title="Structure representing a PID regulator.">pid_str</a> &amp;p, <span class="keywordtype">long</span> e)
+<a name="l00063"></a>00063 {
+<a name="l00064"></a>00064         <span class="keywordtype">long</span> val;
+<a name="l00065"></a>00065         p.<a class="code" href="structpid__str.html#ab5da6edeb8d607bf45f9be8330079120" title="Sum of all differences (epsilons) since start of the algorithm.">sum_e</a> += e;
+<a name="l00066"></a>00066         val = p.<a class="code" href="structpid__str.html#a7c039d6ba7d0cc9d03fe3631f5ee5811" title="Power of proportional part.">kp</a> * e + p.<a class="code" href="structpid__str.html#a0f9566f4e143fbbf1a8c4f3ab920f7cb" title="Power of derivative part.">kd</a>*(e-p.<a class="code" href="structpid__str.html#afba88804d3ae4faf2c06e0199d553745" title="Last difference (epsilon).">last_e</a>) + p.<a class="code" href="structpid__str.html#a1246caf4496665d0d9122ae001e9bbea" title="Power of integral part.">ki</a> * p.<a class="code" href="structpid__str.html#ab5da6edeb8d607bf45f9be8330079120" title="Sum of all differences (epsilons) since start of the algorithm.">sum_e</a>;
+<a name="l00067"></a>00067         p.<a class="code" href="structpid__str.html#afba88804d3ae4faf2c06e0199d553745" title="Last difference (epsilon).">last_e</a> = e;
+<a name="l00068"></a>00068         <span class="keywordflow">return</span> val;
+<a name="l00069"></a>00069 }
+<a name="l00070"></a>00070         
+<a name="l00071"></a>00071 
+<a name="l00072"></a>00072 
 </pre></div></div>
 <!--- window showing the filter options -->
 <div id="MSearchSelectWindow"
@@ -86,7 +86,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </iframe>
 </div>
 
-<hr class="footer"/><address style="text-align: right;"><small>Generated on Wed Apr 27 07:57:56 2011 for R3D3 by&nbsp;
+<hr class="footer"/><address style="text-align: right;"><small>Generated on Wed Apr 27 08:16:49 2011 for R3D3 by&nbsp;
 <a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.6.3 </small></address>
 </body>
