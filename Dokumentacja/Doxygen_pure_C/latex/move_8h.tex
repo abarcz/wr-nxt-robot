@@ -1,0 +1,254 @@
+\hypertarget{move_8h}{
+\section{workspace/WR/Source/move.h File Reference}
+\label{move_8h}\index{workspace/WR/Source/move.h@{workspace/WR/Source/move.h}}
+}
+
+
+Controlling the robot movements.  
+
+
+\subsection*{Defines}
+\begin{DoxyCompactItemize}
+\item 
+\hypertarget{move_8h_a060d37269c07201f3e053cd0a354dba6}{
+\#define \hyperlink{move_8h_a060d37269c07201f3e053cd0a354dba6}{MOT\_\-ALL}~OUT\_\-AC}
+\label{move_8h_a060d37269c07201f3e053cd0a354dba6}
+
+\begin{DoxyCompactList}\small\item\em all the motors \item\end{DoxyCompactList}\item 
+\hypertarget{move_8h_a3bada4408e2538fb2a68ec441ce90e22}{
+\#define \hyperlink{move_8h_a3bada4408e2538fb2a68ec441ce90e22}{MOT\_\-L}~OUT\_\-A}
+\label{move_8h_a3bada4408e2538fb2a68ec441ce90e22}
+
+\begin{DoxyCompactList}\small\item\em left motor \item\end{DoxyCompactList}\item 
+\hypertarget{move_8h_abd0a37d69b8b8e0b899ac82e1c1096ae}{
+\#define \hyperlink{move_8h_abd0a37d69b8b8e0b899ac82e1c1096ae}{MOT\_\-R}~OUT\_\-C}
+\label{move_8h_abd0a37d69b8b8e0b899ac82e1c1096ae}
+
+\begin{DoxyCompactList}\small\item\em right motor \item\end{DoxyCompactList}\item 
+\hypertarget{move_8h_a5cb5d40292ad3355d7e64933397dee39}{
+\#define \hyperlink{move_8h_a5cb5d40292ad3355d7e64933397dee39}{ON\_\-FWD}(p)~OnRevReg(MOT\_\-ALL, p, OUT\_\-REGMODE\_\-SYNC)}
+\label{move_8h_a5cb5d40292ad3355d7e64933397dee39}
+
+\begin{DoxyCompactList}\small\item\em move forward (sync engines) \item\end{DoxyCompactList}\item 
+\hypertarget{move_8h_afe7fd0e909a77b96724d2530b3d9c64a}{
+\#define \hyperlink{move_8h_afe7fd0e909a77b96724d2530b3d9c64a}{ON\_\-FWDL}(p)~OnRev(MOT\_\-L, p)}
+\label{move_8h_afe7fd0e909a77b96724d2530b3d9c64a}
+
+\begin{DoxyCompactList}\small\item\em move forward left \item\end{DoxyCompactList}\item 
+\hypertarget{move_8h_a1d669c3436cf27f786e2a07ade127440}{
+\#define \hyperlink{move_8h_a1d669c3436cf27f786e2a07ade127440}{ON\_\-FWDR}(p)~OnRev(MOT\_\-R, p)}
+\label{move_8h_a1d669c3436cf27f786e2a07ade127440}
+
+\begin{DoxyCompactList}\small\item\em move forward right \item\end{DoxyCompactList}\item 
+\hypertarget{move_8h_a932f27d0013f2b4bc18f2602b452259d}{
+\#define \hyperlink{move_8h_a932f27d0013f2b4bc18f2602b452259d}{ON\_\-REV}(p)~OnFwdReg(MOT\_\-ALL, p, OUT\_\-REGMODE\_\-SYNC)}
+\label{move_8h_a932f27d0013f2b4bc18f2602b452259d}
+
+\begin{DoxyCompactList}\small\item\em move backward (sync engines) \item\end{DoxyCompactList}\item 
+\hypertarget{move_8h_a06af16f04ddd8b4c9dec14728a35aa25}{
+\#define \hyperlink{move_8h_a06af16f04ddd8b4c9dec14728a35aa25}{ON\_\-REVL}(p)~OnFwd(MOT\_\-L, p)}
+\label{move_8h_a06af16f04ddd8b4c9dec14728a35aa25}
+
+\begin{DoxyCompactList}\small\item\em move backward left \item\end{DoxyCompactList}\item 
+\hypertarget{move_8h_a89c4b95ebeef08b3e61fa6c5837497df}{
+\#define \hyperlink{move_8h_a89c4b95ebeef08b3e61fa6c5837497df}{ON\_\-REVR}(p)~OnFwd(MOT\_\-R, p)}
+\label{move_8h_a89c4b95ebeef08b3e61fa6c5837497df}
+
+\begin{DoxyCompactList}\small\item\em move backward right \item\end{DoxyCompactList}\item 
+\hypertarget{move_8h_a1fe20b4566e6f26134b760d6c5b8e006}{
+\#define \hyperlink{move_8h_a1fe20b4566e6f26134b760d6c5b8e006}{ON\_\-LEFT}(p)~OnRev(MOT\_\-R,p);OnFwd(MOT\_\-L,p)}
+\label{move_8h_a1fe20b4566e6f26134b760d6c5b8e006}
+
+\begin{DoxyCompactList}\small\item\em move left \item\end{DoxyCompactList}\item 
+\hypertarget{move_8h_a7b1d367bc66c682a9e3c624883832a45}{
+\#define \hyperlink{move_8h_a7b1d367bc66c682a9e3c624883832a45}{ON\_\-RIGHT}(p)~OnRev(MOT\_\-L,p);OnFwd(MOT\_\-R,p)}
+\label{move_8h_a7b1d367bc66c682a9e3c624883832a45}
+
+\begin{DoxyCompactList}\small\item\em move right \item\end{DoxyCompactList}\item 
+\hypertarget{move_8h_a2c89cb1a5acc9c6eb8b28aa389f33716}{
+\#define \hyperlink{move_8h_a2c89cb1a5acc9c6eb8b28aa389f33716}{ENG\_\-STOP}()~Coast(MOT\_\-ALL)}
+\label{move_8h_a2c89cb1a5acc9c6eb8b28aa389f33716}
+
+\begin{DoxyCompactList}\small\item\em stop engines \item\end{DoxyCompactList}\item 
+\hypertarget{move_8h_a7a1e1c9f33a62ddd89b239d9920ef102}{
+\#define \hyperlink{move_8h_a7a1e1c9f33a62ddd89b239d9920ef102}{ENG\_\-BRAKE}()~Off(MOT\_\-ALL)}
+\label{move_8h_a7a1e1c9f33a62ddd89b239d9920ef102}
+
+\begin{DoxyCompactList}\small\item\em brake \item\end{DoxyCompactList}\item 
+\hypertarget{move_8h_a897268eb39b94ca3b67d058b4798f00a}{
+\#define \hyperlink{move_8h_a897268eb39b94ca3b67d058b4798f00a}{A360\_\-TURNTIME}~850}
+\label{move_8h_a897268eb39b94ca3b67d058b4798f00a}
+
+\begin{DoxyCompactList}\small\item\em Time needed to turn 360 degrees with constant power. \item\end{DoxyCompactList}\item 
+\hypertarget{move_8h_aed8bb7a02bcf51c34bec7c7fa8470a3a}{
+\#define \hyperlink{move_8h_aed8bb7a02bcf51c34bec7c7fa8470a3a}{A90\_\-TURNTIME}~235}
+\label{move_8h_aed8bb7a02bcf51c34bec7c7fa8470a3a}
+
+\begin{DoxyCompactList}\small\item\em Time needed to turn 90 degrees with constant power. \item\end{DoxyCompactList}\item 
+\hypertarget{move_8h_a3ee6de8cafb6db5c5ba6bbdc78567133}{
+\#define \hyperlink{move_8h_a3ee6de8cafb6db5c5ba6bbdc78567133}{TURN\_\-PWR}~75}
+\label{move_8h_a3ee6de8cafb6db5c5ba6bbdc78567133}
+
+\begin{DoxyCompactList}\small\item\em Power supplied during the turn. \item\end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \hyperlink{move_8h_a2769ea567abb727bec991bf85eeae8c8}{eng\_\-fwd\_\-reg} (char power\_\-l, char power\_\-r)
+\begin{DoxyCompactList}\small\item\em Control robot movement forward during PID regulation. \item\end{DoxyCompactList}\item 
+void \hyperlink{move_8h_a44cf561be403f4724a2d42c89c572c16}{eng\_\-rev\_\-reg} (char power\_\-l, char power\_\-r)
+\begin{DoxyCompactList}\small\item\em Control robot movement backward during PID regulation. \item\end{DoxyCompactList}\item 
+void \hyperlink{move_8h_aca5117ebf5559c8b9ea6a03c14c8279a}{eng\_\-fwd} (char power)
+\begin{DoxyCompactList}\small\item\em Control robot movement forward. \item\end{DoxyCompactList}\item 
+void \hyperlink{move_8h_a9a01e2e784a2cc14e588184d067af9b8}{eng\_\-rev} (char power)
+\begin{DoxyCompactList}\small\item\em Control robot movement backward. \item\end{DoxyCompactList}\item 
+void \hyperlink{move_8h_a2dd1a949a83b50770e29db368147daf9}{eng\_\-turn\_\-left} (int angle)
+\begin{DoxyCompactList}\small\item\em Turn robot left in place. \item\end{DoxyCompactList}\item 
+void \hyperlink{move_8h_a9ad2715f9038ad8e7cf87132afda5cf6}{eng\_\-turn\_\-right} (int angle)
+\begin{DoxyCompactList}\small\item\em Turn robot right in place. \item\end{DoxyCompactList}\item 
+void \hyperlink{move_8h_a0816977f80bccdea3769295daa60ee29}{eng\_\-left} (char power)
+\begin{DoxyCompactList}\small\item\em Turn robot left. Power is given to both engines in different directions. \item\end{DoxyCompactList}\item 
+void \hyperlink{move_8h_ac286074fea354d281dee001ced858206}{eng\_\-right} (char power)
+\begin{DoxyCompactList}\small\item\em Turn robot right. Power is given to both engines in different directions. \item\end{DoxyCompactList}\item 
+\hypertarget{move_8h_aaf893c28c42c43e74f91fd08e8598df0}{
+void \hyperlink{move_8h_aaf893c28c42c43e74f91fd08e8598df0}{eng\_\-stop} ()}
+\label{move_8h_aaf893c28c42c43e74f91fd08e8598df0}
+
+\begin{DoxyCompactList}\small\item\em Stop movement. \item\end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+Controlling the robot movements. 
+
+Definition in file \hyperlink{move_8h_source}{move.h}.
+
+
+
+\subsection{Function Documentation}
+\hypertarget{move_8h_aca5117ebf5559c8b9ea6a03c14c8279a}{
+\index{move.h@{move.h}!eng\_\-fwd@{eng\_\-fwd}}
+\index{eng\_\-fwd@{eng\_\-fwd}!move.h@{move.h}}
+\subsubsection[{eng\_\-fwd}]{\setlength{\rightskip}{0pt plus 5cm}void eng\_\-fwd (char {\em power})}}
+\label{move_8h_aca5117ebf5559c8b9ea6a03c14c8279a}
+
+
+Control robot movement forward. 
+
+
+\begin{DoxyParams}{Parameters}
+\item[{\em power}]Power of both engines \end{DoxyParams}
+
+
+Definition at line 106 of file move.h.
+
+\hypertarget{move_8h_a2769ea567abb727bec991bf85eeae8c8}{
+\index{move.h@{move.h}!eng\_\-fwd\_\-reg@{eng\_\-fwd\_\-reg}}
+\index{eng\_\-fwd\_\-reg@{eng\_\-fwd\_\-reg}!move.h@{move.h}}
+\subsubsection[{eng\_\-fwd\_\-reg}]{\setlength{\rightskip}{0pt plus 5cm}void eng\_\-fwd\_\-reg (char {\em power\_\-l}, \/  char {\em power\_\-r})}}
+\label{move_8h_a2769ea567abb727bec991bf85eeae8c8}
+
+
+Control robot movement forward during PID regulation. 
+
+
+\begin{DoxyParams}{Parameters}
+\item[{\em power\_\-l}]Power of the left engine \item[{\em power\_\-r}]Power of the right engine \end{DoxyParams}
+
+
+Definition at line 87 of file move.h.
+
+\hypertarget{move_8h_a0816977f80bccdea3769295daa60ee29}{
+\index{move.h@{move.h}!eng\_\-left@{eng\_\-left}}
+\index{eng\_\-left@{eng\_\-left}!move.h@{move.h}}
+\subsubsection[{eng\_\-left}]{\setlength{\rightskip}{0pt plus 5cm}void eng\_\-left (char {\em power})}}
+\label{move_8h_a0816977f80bccdea3769295daa60ee29}
+
+
+Turn robot left. Power is given to both engines in different directions. 
+
+
+\begin{DoxyParams}{Parameters}
+\item[{\em power}]Power of both engines \end{DoxyParams}
+
+
+Definition at line 156 of file move.h.
+
+\hypertarget{move_8h_a9a01e2e784a2cc14e588184d067af9b8}{
+\index{move.h@{move.h}!eng\_\-rev@{eng\_\-rev}}
+\index{eng\_\-rev@{eng\_\-rev}!move.h@{move.h}}
+\subsubsection[{eng\_\-rev}]{\setlength{\rightskip}{0pt plus 5cm}void eng\_\-rev (char {\em power})}}
+\label{move_8h_a9a01e2e784a2cc14e588184d067af9b8}
+
+
+Control robot movement backward. 
+
+
+\begin{DoxyParams}{Parameters}
+\item[{\em power}]Power of both engines \end{DoxyParams}
+
+
+Definition at line 114 of file move.h.
+
+\hypertarget{move_8h_a44cf561be403f4724a2d42c89c572c16}{
+\index{move.h@{move.h}!eng\_\-rev\_\-reg@{eng\_\-rev\_\-reg}}
+\index{eng\_\-rev\_\-reg@{eng\_\-rev\_\-reg}!move.h@{move.h}}
+\subsubsection[{eng\_\-rev\_\-reg}]{\setlength{\rightskip}{0pt plus 5cm}void eng\_\-rev\_\-reg (char {\em power\_\-l}, \/  char {\em power\_\-r})}}
+\label{move_8h_a44cf561be403f4724a2d42c89c572c16}
+
+
+Control robot movement backward during PID regulation. 
+
+
+\begin{DoxyParams}{Parameters}
+\item[{\em power\_\-l}]Power of the left engine \item[{\em power\_\-r}]Power of the right engine \end{DoxyParams}
+
+
+Definition at line 97 of file move.h.
+
+\hypertarget{move_8h_ac286074fea354d281dee001ced858206}{
+\index{move.h@{move.h}!eng\_\-right@{eng\_\-right}}
+\index{eng\_\-right@{eng\_\-right}!move.h@{move.h}}
+\subsubsection[{eng\_\-right}]{\setlength{\rightskip}{0pt plus 5cm}void eng\_\-right (char {\em power})}}
+\label{move_8h_ac286074fea354d281dee001ced858206}
+
+
+Turn robot right. Power is given to both engines in different directions. 
+
+
+\begin{DoxyParams}{Parameters}
+\item[{\em power}]Power of both engines \end{DoxyParams}
+
+
+Definition at line 164 of file move.h.
+
+\hypertarget{move_8h_a2dd1a949a83b50770e29db368147daf9}{
+\index{move.h@{move.h}!eng\_\-turn\_\-left@{eng\_\-turn\_\-left}}
+\index{eng\_\-turn\_\-left@{eng\_\-turn\_\-left}!move.h@{move.h}}
+\subsubsection[{eng\_\-turn\_\-left}]{\setlength{\rightskip}{0pt plus 5cm}void eng\_\-turn\_\-left (int {\em angle})}}
+\label{move_8h_a2dd1a949a83b50770e29db368147daf9}
+
+
+Turn robot left in place. 
+
+
+\begin{DoxyParams}{Parameters}
+\item[{\em angle}]Angle of rotation in degrees \end{DoxyParams}
+
+
+Definition at line 122 of file move.h.
+
+\hypertarget{move_8h_a9ad2715f9038ad8e7cf87132afda5cf6}{
+\index{move.h@{move.h}!eng\_\-turn\_\-right@{eng\_\-turn\_\-right}}
+\index{eng\_\-turn\_\-right@{eng\_\-turn\_\-right}!move.h@{move.h}}
+\subsubsection[{eng\_\-turn\_\-right}]{\setlength{\rightskip}{0pt plus 5cm}void eng\_\-turn\_\-right (int {\em angle})}}
+\label{move_8h_a9ad2715f9038ad8e7cf87132afda5cf6}
+
+
+Turn robot right in place. 
+
+
+\begin{DoxyParams}{Parameters}
+\item[{\em angle}]Angle of rotation in degrees \end{DoxyParams}
+
+
+Definition at line 139 of file move.h.
+
