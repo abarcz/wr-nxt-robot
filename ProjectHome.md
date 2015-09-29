@@ -1,0 +1,1 @@
+A project for robotics classes on WUT using Lego NXT.
